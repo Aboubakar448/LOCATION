@@ -424,6 +424,42 @@ frontend:
         agent: "testing"
         comment: "Le problème d'authentification a été résolu en réorganisant l'ordre des hooks dans le composant MainApp. Les hooks useEffect et useState sont maintenant déclarés avant les early returns, ce qui respecte les règles des hooks React. L'authentification fonctionne parfaitement avec les identifiants admin/admin123. L'utilisateur peut se connecter, accéder au tableau de bord et naviguer dans toutes les sections de l'application. La devise FCFA est correctement affichée partout, y compris dans l'en-tête et les propriétés. La déconnexion fonctionne également correctement."
 
+  - task: "Units Management"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Le composant Units n'est pas encore implémenté. L'onglet '🏠 Appartements/Studios' est bien présent dans la navigation et cliquable, mais lorsqu'on clique dessus, une erreur JavaScript apparaît: 'Units is not defined'. Cette erreur est attendue car le composant n'est pas encore défini dans le code. La structure de navigation est en place, mais le composant lui-même doit être implémenté."
+
+  - task: "Search History"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Le composant SearchHistory n'est pas encore implémenté. L'onglet '🔍 Recherche Historique' est bien présent dans la navigation, mais le composant lui-même n'est pas défini dans le code. Comme pour le composant Units, la structure de navigation est en place, mais le composant doit être implémenté."
+
+  - task: "Dashboard with Units Statistics"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Le tableau de bord affiche correctement les statistiques, y compris le nombre de propriétés (4), le nombre de locataires (4), les revenus mensuels (0.00CFA), les paiements en attente (0), les paiements en retard (0) et le taux d'occupation (0%). La devise FCFA est correctement affichée. Les nouvelles statistiques pour les unités (appartements/studios) ne sont pas encore visibles, probablement parce que le composant Units n'est pas encore implémenté."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
