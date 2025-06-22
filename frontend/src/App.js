@@ -31,6 +31,16 @@ function App() {
     }
   };
 
+  // Fetch available currencies
+  const fetchCurrencies = async () => {
+    try {
+      const response = await axios.get(`${API}/currencies`);
+      setCurrencies(response.data.currencies);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des devises:', error);
+    }
+  };
+
   // Fetch receipts
   const fetchReceipts = async () => {
     try {
