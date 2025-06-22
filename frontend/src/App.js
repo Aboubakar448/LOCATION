@@ -1252,8 +1252,13 @@ function Settings({ settings, currencies, onRefresh, onBackup, onRestore, loadin
 
       <div className="settings-content">
         <div className="settings-card">
-          <h3>📱 Sauvegarde sur Téléphone</h3>
-          <p>Sauvegardez toutes vos données directement sur votre téléphone</p>
+          <h3>📱 Sauvegarde Automatique Activée</h3>
+          <div style={{background: '#c6f6d5', padding: '1rem', borderRadius: '12px', border: '2px solid #48bb78', marginBottom: '1rem'}}>
+            <p style={{color: '#276749', margin: '0'}}>
+              ✅ <strong>Sauvegarde automatique activée !</strong><br/>
+              Vos données sont sauvegardées automatiquement sur votre appareil après chaque modification.
+            </p>
+          </div>
           
           <div className="backup-actions">
             <button 
@@ -1261,7 +1266,7 @@ function Settings({ settings, currencies, onRefresh, onBackup, onRestore, loadin
               onClick={onBackup}
               disabled={loading}
             >
-              {loading ? '⏳ Sauvegarde...' : '💾 Sauvegarder sur Téléphone'}
+              {loading ? '⏳ Sauvegarde...' : '💾 Sauvegarde Manuelle Supplémentaire'}
             </button>
             
             <div className="restore-section">
