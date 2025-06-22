@@ -420,8 +420,7 @@ test_plan:
     - "Receipt Numbering"
     - "Receipt Print/PDF Functions"
     - "Mobile Interface for Receipts"
-  stuck_tasks: 
-    - "Receipt Print/PDF Functions"
+  stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
