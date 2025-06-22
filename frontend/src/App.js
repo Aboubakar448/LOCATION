@@ -526,13 +526,22 @@ function MainApp() {
             receipts={receipts}
             tenants={tenants}
             properties={properties}
+            units={units}
             settings={settings}
             onRefresh={() => {
               fetchReceipts();
-              autoBackup(); // Sauvegarde automatique
+              autoBackup();
             }}
             setCurrentReceipt={setCurrentReceipt}
             setShowReceiptModal={setShowReceiptModal}
+          />
+        )}
+        {currentView === 'search' && (
+          <SearchHistory 
+            properties={properties}
+            units={units}
+            tenants={tenants}
+            settings={settings}
           />
         )}
         {currentView === 'settings' && (
@@ -545,7 +554,7 @@ function MainApp() {
             }}
             onBackup={backupToPhone}
             onRestore={restoreFromPhone}
-            loading={loading}
+            loading={loadingData}
           />
         )}
       </main>
