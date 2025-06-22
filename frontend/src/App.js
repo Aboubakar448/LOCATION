@@ -1164,7 +1164,7 @@ function Settings({ settings, currencies, onRefresh, onBackup, onRestore, loadin
 }
 
 // Receipts Component
-function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
+function Receipts({ receipts, tenants, properties, settings, onRefresh, setCurrentReceipt, setShowReceiptModal }) {
   const [filterTenant, setFilterTenant] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [instantSearch, setInstantSearch] = useState('');
