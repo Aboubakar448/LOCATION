@@ -157,7 +157,9 @@ function App() {
 }
 
 function MainApp() {
-  const { user, loading, setLoading, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
+  
+  // Tous les states déclarés d'abord
   const [currentView, setCurrentView] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -170,6 +172,7 @@ function MainApp() {
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [currentReceipt, setCurrentReceipt] = useState(null);
 
+  // Early returns après tous les hooks
   if (loading) {
     return <div className="loading-screen">Chargement...</div>;
   }
