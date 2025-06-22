@@ -412,14 +412,16 @@ async def get_available_currencies():
 
 # Properties endpoints
 @api_router.post("/properties", response_model=Property)
-async def create_property(property_data: PropertyCreate):
+async def create_property(property_data: PropertyCreate, current_user: User = Depends(get_current_user)):
+    if current_user.role == UserRole.viewer:
+        raise HTTPException(status_code=403, detail="Permissions insuffisantes")
     property_dict = property_data.dict()
     property_obj = Property(**property_dict)
     await db.properties.insert_one(property_obj.dict())
     return property_obj
 
 @api_router.get("/properties", response_model=List[Property])
-async def get_properties():
+async def get_properties(current_user: User = Depends(get_current_user)):
     properties = await db.properties.find().to_list(1000)
     return [Property(**prop) for prop in properties]
 
