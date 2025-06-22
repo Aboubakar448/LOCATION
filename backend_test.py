@@ -229,7 +229,9 @@ def test_payments_api(tenants):
                 "month": month,
                 "year": year,
                 "amount": tenant["monthly_rent"],
-                "status": "en_attente"
+                "status": "en_attente",
+                # Use ISO format string for date instead of date object
+                "paid_date": None
             }
             
             response = requests.post(f"{API_URL}/payments", json=payment_data)
@@ -258,7 +260,8 @@ def test_payments_api(tenants):
         "month": created_payments[0]["month"],
         "year": created_payments[0]["year"],
         "amount": created_payments[0]["amount"] + 50,  # Increase amount
-        "status": "en_attente"
+        "status": "en_attente",
+        "paid_date": None
     }
     response = requests.put(f"{API_URL}/payments/{payment_id}", json=update_data)
     print_response(response, f"PUT /payments/{payment_id}:")
