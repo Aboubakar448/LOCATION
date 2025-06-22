@@ -319,6 +319,13 @@ test_plan:
     - "Settings API"
     - "Currencies API"
     - "Receipts CRUD API"
+    - "Responsive UI Design"
+    - "Properties Management"
+    - "Tenants Management"
+    - "Payments Tracking"
+    - "Dashboard with Statistics"
+    - "Currency Management"
+    - "Receipts System"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
