@@ -129,6 +129,8 @@ class DashboardStats(BaseModel):
     pending_payments: int
     overdue_payments: int
     occupancy_rate: float
+    currency: str
+    currency_symbol: str
 
 # Routes
 @api_router.get("/")
