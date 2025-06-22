@@ -691,7 +691,7 @@ function Tenants({ tenants, properties, settings, onRefresh }) {
 }
 
 // Payments Component
-function Payments({ payments, tenants, properties, settings, onRefresh }) {
+function Payments({ payments, tenants, properties, settings, onRefresh, onGenerateReceipt }) {
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [formData, setFormData] = useState({
