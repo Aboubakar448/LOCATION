@@ -393,7 +393,53 @@ function Properties({ properties, settings, onRefresh }) {
               </span>
             </div>
             <div className="card-content">
-              <p className="rent">💰 {property.monthly_rent}€/mois</p>
+              <div className="rent-section">
+                {quickEditId === property.id ? (
+                  <div className="quick-edit">
+                    <input
+                      type="number"
+                      value={quickEditRent}
+                      onChange={(e) => setQuickEditRent(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleQuickRentEdit(property.id, quickEditRent);
+                        }
+                      }}
+                      placeholder="Nouveau prix"
+                      autoFocus
+                    />
+                    <button 
+                      onClick={() => handleQuickRentEdit(property.id, quickEditRent)}
+                      className="quick-save-btn"
+                    >
+                      ✓
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setQuickEditId(null);
+                        setQuickEditRent('');
+                      }}
+                      className="quick-cancel-btn"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="rent-display">
+                    <p className="rent">💰 {property.monthly_rent}{currencySymbol}/mois</p>
+                    <button 
+                      className="quick-edit-btn"
+                      onClick={() => {
+                        setQuickEditId(property.id);
+                        setQuickEditRent(property.monthly_rent.toString());
+                      }}
+                      title="Modifier le prix rapidement"
+                    >
+                      ✏️
+                    </button>
+                  </div>
+                )}
+              </div>
               {property.description && <p className="description">{property.description}</p>}
             </div>
             <div className="card-actions">
