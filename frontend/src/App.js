@@ -636,6 +636,15 @@ function Payments({ payments, tenants, properties, settings, onRefresh }) {
     status: 'en_attente'
   });
 
+  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
+                         settings?.currency === 'USD' ? '$' : 
+                         settings?.currency === 'XOF' ? 'CFA' : 
+                         settings?.currency === 'MAD' ? 'DH' : 
+                         settings?.currency === 'TND' ? 'DT' : 
+                         settings?.currency === 'GBP' ? '£' : 
+                         settings?.currency === 'CHF' ? 'CHF' : 
+                         settings?.currency === 'CAD' ? 'C$' : '€';
+
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
