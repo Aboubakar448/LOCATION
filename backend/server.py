@@ -58,6 +58,17 @@ CURRENCY_SYMBOLS = {
     "CAD": "C$"
 }
 
+class AppSettings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    currency: Currency = Currency.EUR
+    app_name: str = "Gestion Location Immobilière"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class AppSettingsUpdate(BaseModel):
+    currency: Currency
+    app_name: Optional[str] = None
+
 # Models
 class Property(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
