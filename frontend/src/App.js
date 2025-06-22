@@ -329,6 +329,16 @@ function MainApp() {
     }
   };
 
+  // Fetch units
+  const fetchUnits = async () => {
+    try {
+      const response = await axios.get(`${API}/units`);
+      setUnits(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des unités:', error);
+    }
+  };
+
   // Fetch properties
   const fetchProperties = async () => {
     try {
