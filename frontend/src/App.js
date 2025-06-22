@@ -356,7 +356,7 @@ function Properties({ properties, settings, onRefresh }) {
               />
               <input
                 type="number"
-                placeholder="Loyer mensuel (€)"
+                placeholder={`Loyer mensuel (${currencySymbol})`}
                 value={formData.monthly_rent}
                 onChange={(e) => setFormData({...formData, monthly_rent: e.target.value})}
                 required
