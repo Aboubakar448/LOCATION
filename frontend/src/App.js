@@ -150,9 +150,7 @@ function Login() {
 // Main App Component
 function App() {
   return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
+    <MainApp />
   );
 }
 
