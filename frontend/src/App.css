@@ -1233,9 +1233,214 @@ body {
   text-align: center;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  /* Add dark mode styles if needed */
+/* Instant Search Styles */
+.instant-search {
+  position: relative;
+  flex: 2;
+  min-width: 300px;
+}
+
+.instant-search-input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 1rem;
+  border: 3px solid #667eea;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #f7fafc 0%, white 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  transition: all 0.3s ease;
+}
+
+.instant-search-input:focus {
+  outline: none;
+  border-color: #4c51bf;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e53e3e;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-search:hover {
+  background: #c53030;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.search-results-header {
+  background: rgba(102, 126, 234, 0.1);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 15px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.search-results-header h3 {
+  color: #4c51bf;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* Tenant Receipts Group Styles */
+.tenant-receipts-group {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(72, 187, 120, 0.2);
+}
+
+.tenant-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tenant-group-header h4 {
+  color: #2d3748;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.tenant-total {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.receipt-item.tenant-grouped {
+  margin-bottom: 1rem;
+  background: #f7fafc;
+  border-left: 4px solid #48bb78;
+}
+
+.receipt-item.tenant-grouped:last-child {
+  margin-bottom: 0;
+}
+
+/* Backup/Restore Styles */
+.backup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.backup-btn {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.backup-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+}
+
+.backup-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.restore-section {
+  text-align: center;
+}
+
+.restore-label {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.restore-label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.restore-input {
+  display: none;
+}
+
+.restore-hint {
+  margin-top: 0.5rem;
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+/* Usage Guide Styles */
+.usage-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.guide-icon {
+  font-size: 1.5rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.guide-item strong {
+  color: #2d3748;
+  font-size: 1rem;
+}
+
+.guide-item p {
+  color: #4a5568;
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
 /* Responsive Receipts */
