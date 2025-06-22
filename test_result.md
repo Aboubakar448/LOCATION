@@ -107,51 +107,63 @@ user_problem_statement: "Application mobile et web de gestion de location immobi
 backend:
   - task: "Properties CRUD API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Créé les endpoints CRUD pour les propriétés avec modèles Pydantic. Corrigé problèmes de sérialisation dates."
+      - working: true
+        agent: "testing"
+        comment: "Tous les endpoints CRUD pour les propriétés fonctionnent correctement. La création, lecture, mise à jour et suppression des propriétés sont opérationnelles. Les dates sont correctement sérialisées en format ISO."
 
   - task: "Tenants CRUD API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Créé les endpoints CRUD pour les locataires avec liaison aux propriétés"
+      - working: true
+        agent: "testing"
+        comment: "Tous les endpoints CRUD pour les locataires fonctionnent correctement. La création de locataires avec start_date au format ISO fonctionne parfaitement. La liaison avec les propriétés est correcte et le statut des propriétés est mis à jour automatiquement."
 
   - task: "Payments CRUD API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Créé les endpoints CRUD pour les paiements avec gestion du statut"
+      - working: true
+        agent: "testing"
+        comment: "Tous les endpoints CRUD pour les paiements fonctionnent correctement. La création de paiements avec paid_date au format ISO fonctionne parfaitement. L'endpoint mark-paid fonctionne correctement et définit la date de paiement au format ISO."
 
   - task: "Dashboard Statistics API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Créé endpoint dashboard avec revenus, taux occupation, paiements en attente"
+      - working: true
+        agent: "testing"
+        comment: "L'endpoint dashboard fonctionne correctement et calcule toutes les statistiques attendues. Les revenus mensuels, le taux d'occupation et les paiements en attente sont correctement calculés."
 
 frontend:
   - task: "Responsive UI Design"
@@ -217,7 +229,7 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
@@ -233,3 +245,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Application de base créée avec toutes les fonctionnalités CRUD. Corrigé problèmes de sérialisation des dates MongoDB (changé types date en string). Prêt pour test backend complet."
+  - agent: "testing"
+    message: "Tests backend complets effectués. Tous les endpoints API fonctionnent correctement. Les problèmes de sérialisation des dates ont été résolus avec succès. Les dates sont maintenant correctement gérées au format ISO (YYYY-MM-DD). Tous les tests CRUD pour les propriétés, locataires et paiements passent avec succès. L'endpoint mark-paid fonctionne correctement et définit la date de paiement. Les statistiques du dashboard sont calculées correctement."
