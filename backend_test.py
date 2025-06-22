@@ -2,7 +2,7 @@
 import requests
 import json
 import uuid
-from datetime import datetime, date
+from datetime import datetime
 import sys
 import os
 from dotenv import load_dotenv
