@@ -207,8 +207,8 @@ function Dashboard({ stats, onRefresh }) {
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
-            <div className="stat-value">{stats.monthly_revenue.toFixed(2)}€</div>
-            <div className="stat-label">Revenus Mensuels</div>
+            <div className="stat-value">{stats.monthly_revenue.toFixed(2)}{stats.currency_symbol}</div>
+            <div className="stat-label">Revenus Mensuels ({stats.currency})</div>
           </div>
         </div>
         
