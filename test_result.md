@@ -164,6 +164,33 @@ backend:
       - working: true
         agent: "testing"
         comment: "L'endpoint dashboard fonctionne correctement et calcule toutes les statistiques attendues. Les revenus mensuels, le taux d'occupation et les paiements en attente sont correctement calculés."
+      - working: true
+        agent: "testing"
+        comment: "L'endpoint dashboard inclut maintenant les informations de devise (currency et currency_symbol) qui reflètent correctement les paramètres de l'application."
+
+  - task: "Settings API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Les endpoints GET et PUT /settings fonctionnent correctement. Les paramètres par défaut sont créés automatiquement lors du premier accès. La mise à jour de la devise et du nom de l'application fonctionne parfaitement."
+
+  - task: "Currencies API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "L'endpoint GET /currencies fonctionne correctement et renvoie toutes les devises disponibles avec leurs codes, noms et symboles. Toutes les devises requises (EUR, USD, XOF, MAD, TND, etc.) sont présentes."
 
 frontend:
   - task: "Responsive UI Design"
