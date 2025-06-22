@@ -1095,15 +1095,36 @@ function Settings({ settings, currencies, onRefresh }) {
 function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
   const [filterTenant, setFilterTenant] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [instantSearch, setInstantSearch] = useState('');
 
+  // Real-time filtering
   const filteredReceipts = receipts.filter(receipt => {
     const matchesTenant = !filterTenant || receipt.tenant_id === filterTenant;
     const matchesSearch = !searchTerm || 
       receipt.receipt_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       receipt.tenant_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       receipt.property_address.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesTenant && matchesSearch;
+    
+    // Instant search by tenant name
+    const matchesInstantSearch = !instantSearch || 
+      receipt.tenant_name.toLowerCase().includes(instantSearch.toLowerCase());
+    
+    return matchesTenant && matchesSearch && matchesInstantSearch;
   });
+
+  // Group receipts by tenant for better organization
+  const receiptsByTenant = filteredReceipts.reduce((acc, receipt) => {
+    const tenantName = receipt.tenant_name;
+    if (!acc[tenantName]) {
+      acc[tenantName] = [];
+    }
+    acc[tenantName].push(receipt);
+    return acc;
+  }, {});
+
+  const getTenantTotal = (tenantReceipts) => {
+    return tenantReceipts.reduce((total, receipt) => total + receipt.amount, 0);
+  };
 
   const downloadPDF = async (receipt) => {
     const pdf = new jsPDF();
