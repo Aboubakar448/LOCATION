@@ -326,6 +326,15 @@ async def delete_payment(payment_id: str):
 # Dashboard endpoint
 @api_router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
+    # Get app settings for currency
+    settings = await db.settings.find_one({})
+    if not settings:
+        settings = AppSettings().dict()
+        await db.settings.insert_one(settings)
+    
+    currency = settings.get("currency", "EUR")
+    currency_symbol = CURRENCY_SYMBOLS.get(currency, "€")
+    
     # Get counts
     total_properties = await db.properties.count_documents({})
     total_tenants = await db.tenants.count_documents({})
@@ -356,7 +365,9 @@ async def get_dashboard_stats():
         monthly_revenue=monthly_revenue,
         pending_payments=pending_payments,
         overdue_payments=overdue_payments,
-        occupancy_rate=round(occupancy_rate, 2)
+        occupancy_rate=round(occupancy_rate, 2),
+        currency=currency,
+        currency_symbol=currency_symbol
     )
 
 # Include the router in the main app
