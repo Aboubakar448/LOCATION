@@ -281,6 +281,15 @@ function Properties({ properties, settings, onRefresh }) {
     }
   };
 
+  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
+                         settings?.currency === 'USD' ? '$' : 
+                         settings?.currency === 'XOF' ? 'CFA' : 
+                         settings?.currency === 'MAD' ? 'DH' : 
+                         settings?.currency === 'TND' ? 'DT' : 
+                         settings?.currency === 'GBP' ? '£' : 
+                         settings?.currency === 'CHF' ? 'CHF' : 
+                         settings?.currency === 'CAD' ? 'C$' : '€';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
