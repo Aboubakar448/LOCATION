@@ -115,7 +115,7 @@ backend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Créé les endpoints CRUD pour les propriétés avec modèles Pydantic"
+        comment: "Créé les endpoints CRUD pour les propriétés avec modèles Pydantic. Corrigé problèmes de sérialisation dates."
 
   - task: "Tenants CRUD API"
     implemented: true
