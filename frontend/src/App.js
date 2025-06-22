@@ -1027,4 +1027,269 @@ function Settings({ settings, currencies, onRefresh }) {
   );
 }
 
+// Receipts Component
+function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
+  const [filterTenant, setFilterTenant] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredReceipts = receipts.filter(receipt => {
+    const matchesTenant = !filterTenant || receipt.tenant_id === filterTenant;
+    const matchesSearch = !searchTerm || 
+      receipt.receipt_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      receipt.tenant_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      receipt.property_address.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesTenant && matchesSearch;
+  });
+
+  const downloadPDF = async (receipt) => {
+    const pdf = new jsPDF();
+    
+    // Header
+    pdf.setFontSize(20);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('REÇU DE PAIEMENT', 105, 30, { align: 'center' });
+    
+    // Receipt info
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`N° de reçu: ${receipt.receipt_number}`, 20, 50);
+    pdf.text(`Date: ${new Date(receipt.payment_date).toLocaleDateString('fr-FR')}`, 20, 60);
+    
+    // Tenant info
+    pdf.setFont(undefined, 'bold');
+    pdf.text('INFORMATIONS LOCATAIRE:', 20, 80);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Nom: ${receipt.tenant_name}`, 20, 90);
+    pdf.text(`Propriété: ${receipt.property_address}`, 20, 100);
+    
+    // Payment info
+    pdf.setFont(undefined, 'bold');
+    pdf.text('DÉTAILS DU PAIEMENT:', 20, 120);
+    pdf.setFont(undefined, 'normal');
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    pdf.text(`Période: ${monthNames[receipt.period_month - 1]} ${receipt.period_year}`, 20, 130);
+    pdf.text(`Montant: ${receipt.amount}${receipt.currency_symbol}`, 20, 140);
+    pdf.text(`Mode de paiement: ${receipt.payment_method}`, 20, 150);
+    
+    if (receipt.notes) {
+      pdf.text(`Notes: ${receipt.notes}`, 20, 160);
+    }
+    
+    // Footer
+    pdf.setFontSize(10);
+    pdf.text('Ce reçu confirme le paiement du loyer pour la période indiquée.', 105, 250, { align: 'center' });
+    pdf.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, 105, 260, { align: 'center' });
+    
+    pdf.save(`Recu_${receipt.receipt_number}.pdf`);
+  };
+
+  const printReceipt = (receipt) => {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Reçu ${receipt.receipt_number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .receipt-number { font-size: 18px; font-weight: bold; }
+            .section { margin-bottom: 20px; }
+            .label { font-weight: bold; }
+            .amount { font-size: 24px; font-weight: bold; color: #48bb78; }
+            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
+            @media print { body { margin: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>REÇU DE PAIEMENT</h1>
+            <div class="receipt-number">N° ${receipt.receipt_number}</div>
+            <div>Date: ${new Date(receipt.payment_date).toLocaleDateString('fr-FR')}</div>
+          </div>
+          
+          <div class="section">
+            <div class="label">INFORMATIONS LOCATAIRE:</div>
+            <div>Nom: ${receipt.tenant_name}</div>
+            <div>Propriété: ${receipt.property_address}</div>
+          </div>
+          
+          <div class="section">
+            <div class="label">DÉTAILS DU PAIEMENT:</div>
+            <div>Période: ${monthNames[receipt.period_month - 1]} ${receipt.period_year}</div>
+            <div class="amount">Montant: ${receipt.amount}${receipt.currency_symbol}</div>
+            <div>Mode de paiement: ${receipt.payment_method}</div>
+            ${receipt.notes ? `<div>Notes: ${receipt.notes}</div>` : ''}
+          </div>
+          
+          <div class="footer">
+            <div>Ce reçu confirme le paiement du loyer pour la période indiquée.</div>
+            <div>Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
+          </div>
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  return (
+    <div className="receipts">
+      <div className="section-header">
+        <h2>🧾 Historique des Reçus</h2>
+        <button className="refresh-btn" onClick={onRefresh}>🔄 Actualiser</button>
+      </div>
+
+      <div className="receipts-filters">
+        <input
+          type="text"
+          placeholder="Rechercher par N° de reçu, locataire ou propriété..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <select
+          value={filterTenant}
+          onChange={(e) => setFilterTenant(e.target.value)}
+          className="filter-select"
+        >
+          <option value="">Tous les locataires</option>
+          {tenants.map(tenant => (
+            <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="receipts-list">
+        {filteredReceipts.length === 0 ? (
+          <div className="no-receipts">
+            <p>Aucun reçu trouvé.</p>
+            <p>Les reçus sont générés automatiquement lors du marquage des paiements comme payés.</p>
+          </div>
+        ) : (
+          filteredReceipts.map(receipt => (
+            <div key={receipt.id} className="receipt-item">
+              <div className="receipt-info">
+                <h4>{receipt.receipt_number}</h4>
+                <p><strong>Locataire:</strong> {receipt.tenant_name}</p>
+                <p><strong>Propriété:</strong> {receipt.property_address}</p>
+                <p><strong>Période:</strong> {new Date(2023, receipt.period_month - 1).toLocaleDateString('fr-FR', { month: 'long' })} {receipt.period_year}</p>
+                <p><strong>Date de paiement:</strong> {new Date(receipt.payment_date).toLocaleDateString('fr-FR')}</p>
+              </div>
+              <div className="receipt-amount">
+                <span className="amount">{receipt.amount}{receipt.currency_symbol}</span>
+                <span className="method">{receipt.payment_method}</span>
+              </div>
+              <div className="receipt-actions">
+                <button 
+                  className="print-btn"
+                  onClick={() => printReceipt(receipt)}
+                >
+                  🖨️ Imprimer
+                </button>
+                <button 
+                  className="download-btn"
+                  onClick={() => downloadPDF(receipt)}
+                >
+                  📥 PDF
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Receipt Modal Component
+function ReceiptModal({ receipt, onClose }) {
+  const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+  const downloadPDF = async () => {
+    const element = document.getElementById('receipt-content');
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL('image/png');
+    
+    const pdf = new jsPDF();
+    const imgWidth = 210;
+    const pageHeight = 295;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    
+    let position = 0;
+    
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    
+    pdf.save(`Recu_${receipt.receipt_number}.pdf`);
+  };
+
+  const printReceipt = () => {
+    window.print();
+  };
+
+  return (
+    <div className="modal-overlay receipt-modal-overlay">
+      <div className="modal receipt-modal">
+        <div className="modal-header">
+          <h3>Reçu de Paiement</h3>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        
+        <div id="receipt-content" className="receipt-content">
+          <div className="receipt-header">
+            <h2>REÇU DE PAIEMENT</h2>
+            <div className="receipt-number">N° {receipt.receipt_number}</div>
+            <div className="receipt-date">Date: {new Date(receipt.payment_date).toLocaleDateString('fr-FR')}</div>
+          </div>
+          
+          <div className="receipt-section">
+            <h4>INFORMATIONS LOCATAIRE</h4>
+            <p><strong>Nom:</strong> {receipt.tenant_name}</p>
+            <p><strong>Propriété:</strong> {receipt.property_address}</p>
+          </div>
+          
+          <div className="receipt-section">
+            <h4>DÉTAILS DU PAIEMENT</h4>
+            <p><strong>Période:</strong> {monthNames[receipt.period_month - 1]} {receipt.period_year}</p>
+            <p><strong>Montant:</strong> <span className="receipt-amount">{receipt.amount}{receipt.currency_symbol}</span></p>
+            <p><strong>Mode de paiement:</strong> {receipt.payment_method}</p>
+            {receipt.notes && <p><strong>Notes:</strong> {receipt.notes}</p>}
+          </div>
+          
+          <div className="receipt-footer">
+            <p>Ce reçu confirme le paiement du loyer pour la période indiquée.</p>
+            <p>Généré le {new Date(receipt.created_at).toLocaleDateString('fr-FR')} à {new Date(receipt.created_at).toLocaleTimeString('fr-FR')}</p>
+          </div>
+        </div>
+        
+        <div className="receipt-actions">
+          <button className="print-btn" onClick={printReceipt}>
+            🖨️ Imprimer
+          </button>
+          <button className="download-btn" onClick={downloadPDF}>
+            📥 Télécharger PDF
+          </button>
+          <button className="close-btn" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default App;
