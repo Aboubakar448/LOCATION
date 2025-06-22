@@ -14,9 +14,12 @@ function App() {
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [receipts, setReceipts] = useState([]);
   const [settings, setSettings] = useState(null);
   const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [currentReceipt, setCurrentReceipt] = useState(null);
 
   // Fetch app settings
   const fetchSettings = async () => {
