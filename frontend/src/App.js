@@ -112,7 +112,7 @@ function App() {
     fetchTenants();
     fetchPayments();
     fetchSettings();
-    fetchCurrencies();
+    fetchReceipts();
   }, []);
 
   return (
