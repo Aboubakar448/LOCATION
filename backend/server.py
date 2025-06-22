@@ -202,21 +202,29 @@ class Payment(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     tenant_id: str
     property_id: str
+    unit_id: Optional[str] = None
     month: int
     year: int
     amount: float
+    due_date: str  # Date d'échéance
     status: PaymentStatus = PaymentStatus.pending
     paid_date: Optional[str] = None
+    payment_method: Optional[str] = "Espèces"
+    notes: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class PaymentCreate(BaseModel):
     tenant_id: str
     property_id: str
+    unit_id: Optional[str] = None
     month: int
     year: int
     amount: float
+    due_date: str
     status: PaymentStatus = PaymentStatus.pending
     paid_date: Optional[str] = None
+    payment_method: Optional[str] = "Espèces"
+    notes: Optional[str] = None
 
 class Receipt(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
