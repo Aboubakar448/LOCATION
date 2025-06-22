@@ -238,7 +238,7 @@ function MainApp() {
   // Backup data to phone
   const backupToPhone = async () => {
     try {
-      setLoading(true);
+      setLoadingData(true);
       const response = await axios.get(`${API}/backup`);
       const backupData = response.data;
       
@@ -264,7 +264,7 @@ function MainApp() {
       console.error('Erreur lors de la sauvegarde:', error);
       alert('❌ Erreur lors de la sauvegarde');
     } finally {
-      setLoading(false);
+      setLoadingData(false);
     }
   };
 
