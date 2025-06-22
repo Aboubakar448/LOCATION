@@ -424,8 +424,10 @@ metadata:
 test_plan:
   current_focus:
     - "Properties Management"
+    - "Tenants Management"
   stuck_tasks:
     - "Properties Management"
+    - "Tenants Management"
   test_all: false
   test_priority: "high_first"
 
