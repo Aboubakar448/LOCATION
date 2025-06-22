@@ -350,6 +350,9 @@ def test_payments_api(tenants):
     assert response.json()["status"] == "payé", "Payment status not updated to paid"
     assert response.json()["paid_date"] is not None, "Paid date not set"
     
+    # Update the first payment in our list with the updated data
+    created_payments[0] = response.json()
+    
     # Test GET non-existent payment - Note: There's no direct GET endpoint for a single payment
     # Instead, we'll test with a non-existent tenant ID which should return an empty list
     fake_id = str(uuid.uuid4())
@@ -365,7 +368,7 @@ def test_payments_api(tenants):
     assert response.status_code == 200, "Failed to delete payment"
     
     print("\n✅ Payments API tests passed successfully")
-    return created_payments
+    return created_payments[:-1]  # Return all but the deleted payment
 
 def test_dashboard_api():
     print_separator()
