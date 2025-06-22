@@ -36,6 +36,28 @@ class PaymentStatus(str, Enum):
     pending = "en_attente"
     overdue = "en_retard"
 
+class Currency(str, Enum):
+    EUR = "EUR"
+    USD = "USD"
+    XOF = "XOF"
+    MAD = "MAD"
+    TND = "TND"
+    GBP = "GBP"
+    CHF = "CHF"
+    CAD = "CAD"
+
+# Currency symbols mapping
+CURRENCY_SYMBOLS = {
+    "EUR": "€",
+    "USD": "$",
+    "XOF": "CFA",
+    "MAD": "DH",
+    "TND": "DT",
+    "GBP": "£",
+    "CHF": "CHF",
+    "CAD": "C$"
+}
+
 # Models
 class Property(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
