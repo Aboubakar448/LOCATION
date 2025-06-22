@@ -133,6 +133,30 @@ class PropertyCreate(BaseModel):
     description: Optional[str] = None
     status: PropertyStatus = PropertyStatus.available
 
+class Unit(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    property_id: str
+    unit_number: str  # ex: "Apt 1", "Studio A", "RDC Gauche"
+    unit_type: UnitType
+    monthly_rent: float
+    bedrooms: Optional[int] = None
+    bathrooms: Optional[int] = None
+    surface_area: Optional[float] = None  # en m²
+    description: Optional[str] = None
+    status: PropertyStatus = PropertyStatus.available
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UnitCreate(BaseModel):
+    property_id: str
+    unit_number: str
+    unit_type: UnitType
+    monthly_rent: float
+    bedrooms: Optional[int] = None
+    bathrooms: Optional[int] = None
+    surface_area: Optional[float] = None
+    description: Optional[str] = None
+    status: PropertyStatus = PropertyStatus.available
+
 class Tenant(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
