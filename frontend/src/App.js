@@ -172,15 +172,6 @@ function MainApp() {
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [currentReceipt, setCurrentReceipt] = useState(null);
 
-  // Early returns après tous les hooks
-  if (loading) {
-    return <div className="loading-screen">Chargement...</div>;
-  }
-
-  if (!user) {
-    return <Login />;
-  }
-
   // Fetch app settings
   const fetchSettings = async () => {
     try {
@@ -348,6 +339,15 @@ function MainApp() {
       fetchReceipts();
     }
   }, [user]);
+  
+  // Early returns après tous les hooks
+  if (loading) {
+    return <div className="loading-screen">Chargement...</div>;
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <div className="app">
