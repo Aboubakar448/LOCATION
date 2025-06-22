@@ -284,6 +284,9 @@ function App() {
               fetchSettings();
               fetchDashboardStats();
             }}
+            onBackup={backupToPhone}
+            onRestore={restoreFromPhone}
+            loading={loading}
           />
         )}
       </main>
