@@ -416,30 +416,26 @@ async def get_available_currencies():
 
 # Properties endpoints
 @api_router.post("/properties", response_model=Property)
-async def create_property(property_data: PropertyCreate, current_user: User = Depends(get_current_user)):
-    if current_user.role == UserRole.viewer:
-        raise HTTPException(status_code=403, detail="Permissions insuffisantes")
+async def create_property(property_data: PropertyCreate):
     property_dict = property_data.dict()
     property_obj = Property(**property_dict)
     await db.properties.insert_one(property_obj.dict())
     return property_obj
 
 @api_router.get("/properties", response_model=List[Property])
-async def get_properties(current_user: User = Depends(get_current_user)):
+async def get_properties():
     properties = await db.properties.find().to_list(1000)
     return [Property(**prop) for prop in properties]
 
 @api_router.get("/properties/{property_id}", response_model=Property)
-async def get_property(property_id: str, current_user: User = Depends(get_current_user)):
+async def get_property(property_id: str):
     property_data = await db.properties.find_one({"id": property_id})
     if not property_data:
         raise HTTPException(status_code=404, detail="Propriété non trouvée")
     return Property(**property_data)
 
 @api_router.put("/properties/{property_id}", response_model=Property)
-async def update_property(property_id: str, property_data: PropertyCreate, current_user: User = Depends(get_current_user)):
-    if current_user.role == UserRole.viewer:
-        raise HTTPException(status_code=403, detail="Permissions insuffisantes")
+async def update_property(property_id: str, property_data: PropertyCreate):
     update_data = property_data.dict()
     result = await db.properties.update_one(
         {"id": property_id}, 
@@ -452,9 +448,7 @@ async def update_property(property_id: str, property_data: PropertyCreate, curre
     return Property(**updated_property)
 
 @api_router.delete("/properties/{property_id}")
-async def delete_property(property_id: str, current_user: User = Depends(get_current_user)):
-    if current_user.role != UserRole.admin:
-        raise HTTPException(status_code=403, detail="Seuls les administrateurs peuvent supprimer")
+async def delete_property(property_id: str):
     result = await db.properties.delete_one({"id": property_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Propriété non trouvée")
