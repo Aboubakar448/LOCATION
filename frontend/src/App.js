@@ -417,6 +417,12 @@ function MainApp() {
             🏢 Propriétés
           </button>
           <button 
+            className={`nav-btn ${currentView === 'units' ? 'active' : ''}`}
+            onClick={() => setCurrentView('units')}
+          >
+            🏠 Appartements/Studios
+          </button>
+          <button 
             className={`nav-btn ${currentView === 'tenants' ? 'active' : ''}`}
             onClick={() => setCurrentView('tenants')}
           >
