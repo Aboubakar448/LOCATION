@@ -721,6 +721,11 @@ async def create_receipt(receipt_data: ReceiptCreate):
     if not property_data:
         raise HTTPException(status_code=404, detail="Propriété non trouvée")
     
+    # Get unit details if exists
+    unit_data = None
+    if payment.get("unit_id"):
+        unit_data = await db.units.find_one({"id": payment["unit_id"]})
+    
     # Get app settings for currency
     settings = await db.settings.find_one({})
     if not settings:
@@ -739,15 +744,21 @@ async def create_receipt(receipt_data: ReceiptCreate):
         "receipt_number": receipt_number,
         "tenant_id": receipt_data.tenant_id,
         "tenant_name": tenant["name"],
-        "property_address": property_data["address"],
+        "tenant_phone": tenant.get("phone", "Non renseigné"),
+        "property_id": payment["property_id"],
+        "property_name": property_data["address"],
+        "unit_id": payment.get("unit_id"),
+        "unit_number": unit_data["unit_number"] if unit_data else None,
         "payment_id": receipt_data.payment_id,
         "amount": payment["amount"],
         "currency": currency,
         "currency_symbol": currency_symbol,
         "payment_date": payment.get("paid_date", datetime.now().strftime("%Y-%m-%d")),
+        "due_date": payment.get("due_date", datetime.now().strftime("%Y-%m-%d")),
         "period_month": payment["month"],
         "period_year": payment["year"],
-        "payment_method": receipt_data.payment_method or "Espèces",
+        "payment_method": payment.get("payment_method", "Espèces"),
+        "months_paid_total": tenant.get("months_paid", 0),
         "notes": receipt_data.notes
     }
     
