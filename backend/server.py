@@ -66,7 +66,7 @@ class TenantCreate(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     property_id: Optional[str] = None
-    start_date: Optional[date] = None
+    start_date: Optional[str] = None
     monthly_rent: Optional[float] = None
 
 class Payment(BaseModel):
