@@ -574,10 +574,10 @@ async def create_receipt(receipt_data: ReceiptCreate):
     # Get app settings for currency
     settings = await db.settings.find_one({})
     if not settings:
-        settings = {"currency": "EUR"}
+        settings = {"currency": "XOF"}
     
-    currency = settings.get("currency", "EUR")
-    currency_symbol = CURRENCY_SYMBOLS.get(currency, "€")
+    currency = settings.get("currency", "XOF")
+    currency_symbol = CURRENCY_SYMBOLS.get(currency, "CFA")
     
     # Generate receipt number
     current_date = datetime.now()
