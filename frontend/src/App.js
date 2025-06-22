@@ -1230,6 +1230,24 @@ function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
       </div>
 
       <div className="receipts-filters">
+        <div className="instant-search">
+          <input
+            type="text"
+            placeholder="🔍 Tapez le nom du locataire pour voir ses reçus..."
+            value={instantSearch}
+            onChange={(e) => setInstantSearch(e.target.value)}
+            className="instant-search-input"
+          />
+          {instantSearch && (
+            <button 
+              className="clear-search"
+              onClick={() => setInstantSearch('')}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        
         <input
           type="text"
           placeholder="Rechercher par N° de reçu, locataire ou propriété..."
@@ -1237,6 +1255,7 @@ function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
+        
         <select
           value={filterTenant}
           onChange={(e) => setFilterTenant(e.target.value)}
@@ -1249,13 +1268,76 @@ function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
         </select>
       </div>
 
+      {instantSearch && (
+        <div className="search-results-header">
+          <h3>🔍 Résultats pour "{instantSearch}" ({filteredReceipts.length} reçu{filteredReceipts.length > 1 ? 's' : ''})</h3>
+        </div>
+      )}
+
       <div className="receipts-list">
         {filteredReceipts.length === 0 ? (
           <div className="no-receipts">
-            <p>Aucun reçu trouvé.</p>
-            <p>Les reçus sont générés automatiquement lors du marquage des paiements comme payés.</p>
+            {instantSearch ? (
+              <>
+                <p>Aucun reçu trouvé pour "{instantSearch}"</p>
+                <p>Vérifiez l'orthographe du nom du locataire.</p>
+              </>
+            ) : (
+              <>
+                <p>Aucun reçu trouvé.</p>
+                <p>Les reçus sont générés automatiquement lors du marquage des paiements comme payés.</p>
+              </>
+            )}
           </div>
+        ) : instantSearch ? (
+          // Show grouped results when searching by tenant name
+          Object.entries(receiptsByTenant).map(([tenantName, tenantReceipts]) => (
+            <div key={tenantName} className="tenant-receipts-group">
+              <div className="tenant-group-header">
+                <h4>👤 {tenantName} ({tenantReceipts.length} reçu{tenantReceipts.length > 1 ? 's' : ''})</h4>
+                <div className="tenant-total">
+                  Total: {getTenantTotal(tenantReceipts)}{settings?.currency === 'EUR' ? '€' : 
+                          settings?.currency === 'USD' ? '$' : 
+                          settings?.currency === 'XOF' ? 'CFA' : 
+                          settings?.currency === 'MAD' ? 'DH' : 
+                          settings?.currency === 'TND' ? 'DT' : 
+                          settings?.currency === 'GBP' ? '£' : 
+                          settings?.currency === 'CHF' ? 'CHF' : 
+                          settings?.currency === 'CAD' ? 'C$' : '€'}
+                </div>
+              </div>
+              {tenantReceipts.map(receipt => (
+                <div key={receipt.id} className="receipt-item tenant-grouped">
+                  <div className="receipt-info">
+                    <h5>{receipt.receipt_number}</h5>
+                    <p><strong>Propriété:</strong> {receipt.property_address}</p>
+                    <p><strong>Période:</strong> {new Date(2023, receipt.period_month - 1).toLocaleDateString('fr-FR', { month: 'long' })} {receipt.period_year}</p>
+                    <p><strong>Date de paiement:</strong> {new Date(receipt.payment_date).toLocaleDateString('fr-FR')}</p>
+                  </div>
+                  <div className="receipt-amount">
+                    <span className="amount">{receipt.amount}{receipt.currency_symbol}</span>
+                    <span className="method">{receipt.payment_method}</span>
+                  </div>
+                  <div className="receipt-actions">
+                    <button 
+                      className="print-btn"
+                      onClick={() => printReceipt(receipt)}
+                    >
+                      🖨️ Imprimer
+                    </button>
+                    <button 
+                      className="download-btn"
+                      onClick={() => downloadPDF(receipt)}
+                    >
+                      📥 PDF
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))
         ) : (
+          // Show regular list when not searching by tenant name
           filteredReceipts.map(receipt => (
             <div key={receipt.id} className="receipt-item">
               <div className="receipt-info">
