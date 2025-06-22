@@ -771,7 +771,7 @@ function Payments({ payments, tenants, properties, settings, onRefresh }) {
               />
               <input
                 type="number"
-                placeholder="Montant (€)"
+                placeholder={`Montant (${currencySymbol})`}
                 value={formData.amount}
                 onChange={(e) => setFormData({...formData, amount: e.target.value})}
                 required
