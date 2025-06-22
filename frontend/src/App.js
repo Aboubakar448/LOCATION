@@ -825,4 +825,118 @@ function Payments({ payments, tenants, properties, settings, onRefresh }) {
   );
 }
 
+// Settings Component
+function Settings({ settings, currencies, onRefresh }) {
+  const [formData, setFormData] = useState({
+    currency: settings?.currency || 'EUR',
+    app_name: settings?.app_name || 'Gestion Location Immobilière'
+  });
+
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        currency: settings.currency,
+        app_name: settings.app_name
+      });
+    }
+  }, [settings]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${API}/settings`, formData);
+      onRefresh();
+      alert('Paramètres mis à jour avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des paramètres:', error);
+      alert('Erreur lors de la mise à jour des paramètres');
+    }
+  };
+
+  if (!settings) {
+    return <div className="loading">Chargement des paramètres...</div>;
+  }
+
+  return (
+    <div className="settings">
+      <div className="section-header">
+        <h2>⚙️ Paramètres de l'Application</h2>
+      </div>
+
+      <div className="settings-content">
+        <div className="settings-card">
+          <h3>Configuration Générale</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Nom de l'Application</label>
+              <input
+                type="text"
+                value={formData.app_name}
+                onChange={(e) => setFormData({...formData, app_name: e.target.value})}
+                placeholder="Nom de votre application"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Devise par Défaut</label>
+              <select
+                value={formData.currency}
+                onChange={(e) => setFormData({...formData, currency: e.target.value})}
+              >
+                {currencies.map(currency => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.symbol} - {currency.name} ({currency.code})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button type="submit" className="save-settings-btn">
+              💾 Sauvegarder les Paramètres
+            </button>
+          </form>
+        </div>
+
+        <div className="settings-card">
+          <h3>Informations Actuelles</h3>
+          <div className="info-grid">
+            <div className="info-item">
+              <span className="info-label">Devise Actuelle:</span>
+              <span className="info-value">
+                {currencies.find(c => c.code === settings.currency)?.symbol} - {settings.currency}
+              </span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Nom de l'App:</span>
+              <span className="info-value">{settings.app_name}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Dernière Mise à Jour:</span>
+              <span className="info-value">
+                {new Date(settings.updated_at).toLocaleDateString('fr-FR')}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-card">
+          <h3>Devises Disponibles</h3>
+          <div className="currencies-grid">
+            {currencies.map(currency => (
+              <div 
+                key={currency.code} 
+                className={`currency-item ${settings.currency === currency.code ? 'active' : ''}`}
+              >
+                <span className="currency-symbol">{currency.symbol}</span>
+                <span className="currency-code">{currency.code}</span>
+                <span className="currency-name">{currency.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default App;
