@@ -274,6 +274,8 @@ function App() {
             properties={properties}
             settings={settings}
             onRefresh={fetchReceipts}
+            setCurrentReceipt={setCurrentReceipt}
+            setShowReceiptModal={setShowReceiptModal}
           />
         )}
         {currentView === 'settings' && (
