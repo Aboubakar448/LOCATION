@@ -271,7 +271,7 @@ function MainApp() {
   // Restore data from phone
   const restoreFromPhone = async (file) => {
     try {
-      setLoading(true);
+      setLoadingData(true);
       const fileContent = await file.text();
       const backupData = JSON.parse(fileContent);
       
@@ -292,7 +292,7 @@ function MainApp() {
       console.error('Erreur lors de la restauration:', error);
       alert('❌ Erreur lors de la restauration. Vérifiez le fichier de sauvegarde.');
     } finally {
-      setLoading(false);
+      setLoadingData(false);
     }
   };
 
