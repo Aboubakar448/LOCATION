@@ -12,7 +12,29 @@ function App() {
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [settings, setSettings] = useState(null);
+  const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Fetch app settings
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      setSettings(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des paramètres:', error);
+    }
+  };
+
+  // Fetch available currencies
+  const fetchCurrencies = async () => {
+    try {
+      const response = await axios.get(`${API}/currencies`);
+      setCurrencies(response.data.currencies);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des devises:', error);
+    }
+  };
 
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
