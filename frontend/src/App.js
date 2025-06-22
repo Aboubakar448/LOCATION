@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -6,6 +6,146 @@ import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Auth Context
+const AuthContext = createContext();
+const useAuth = () => useContext(AuthContext);
+
+// Auth Provider Component
+function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchUserInfo();
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${API}/auth/me`);
+      setUser(response.data);
+    } catch (error) {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (username, password) => {
+    try {
+      const response = await axios.post(`${API}/auth/login`, { username, password });
+      const { access_token, user_info } = response.data;
+      
+      localStorage.setItem('token', access_token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+      setUser(user_info);
+      
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.detail || 'Erreur de connexion' 
+      };
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    setUser(null);
+  };
+
+  const value = {
+    user,
+    login,
+    logout,
+    loading
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Login Component
+function Login() {
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    const result = await login(credentials.username, credentials.password);
+    
+    if (!result.success) {
+      setError(result.message);
+    }
+    
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <h1>🏠 Gestion Location Immobilière</h1>
+          <p>Devise: <strong>FCFA</strong></p>
+          <p>Connectez-vous avec votre compte</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>Nom d'utilisateur</label>
+            <input
+              type="text"
+              value={credentials.username}
+              onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+              placeholder="Entrez votre nom d'utilisateur"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Mot de passe</label>
+            <input
+              type="password"
+              value={credentials.password}
+              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+              placeholder="Entrez votre mot de passe"
+              required
+            />
+          </div>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <button type="submit" disabled={isLoading} className="login-btn">
+            {isLoading ? 'Connexion...' : 'Se connecter'}
+          </button>
+        </form>
+        
+        <div className="login-footer">
+          <p><strong>Compte par défaut :</strong></p>
+          <p>Utilisateur: <code>admin</code></p>
+          <p>Mot de passe: <code>admin123</code></p>
+          <small>Contactez votre administrateur pour créer votre compte personnel</small>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Main App Component
 function App() {
