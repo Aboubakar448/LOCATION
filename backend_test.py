@@ -396,6 +396,152 @@ def test_dashboard_api():
     
     print("\n✅ Dashboard API tests passed successfully")
 
+def test_settings_and_currencies_api():
+    print_separator()
+    print("TESTING SETTINGS AND CURRENCIES API")
+    print_separator()
+    
+    # Test GET /settings (should return default settings initially)
+    response = requests.get(f"{API_URL}/settings")
+    print_response(response, "Initial GET /settings:")
+    assert response.status_code == 200, "Failed to get settings"
+    initial_settings = response.json()
+    assert "currency" in initial_settings, "Settings missing currency field"
+    assert "app_name" in initial_settings, "Settings missing app_name field"
+    assert initial_settings["currency"] == "EUR", "Default currency should be EUR"
+    
+    # Test PUT /settings to update currency to USD
+    update_data = {
+        "currency": "USD",
+        "app_name": initial_settings["app_name"]
+    }
+    response = requests.put(f"{API_URL}/settings", json=update_data)
+    print_response(response, "PUT /settings (update currency to USD):")
+    assert response.status_code == 200, "Failed to update settings"
+    assert response.json()["currency"] == "USD", "Currency update failed"
+    
+    # Test PUT /settings to update app name
+    new_app_name = "Gestion Immobilière Pro"
+    update_data = {
+        "currency": "USD",  # Keep the USD currency
+        "app_name": new_app_name
+    }
+    response = requests.put(f"{API_URL}/settings", json=update_data)
+    print_response(response, "PUT /settings (update app name):")
+    assert response.status_code == 200, "Failed to update settings"
+    assert response.json()["app_name"] == new_app_name, "App name update failed"
+    
+    # Test GET /settings to verify persistence
+    response = requests.get(f"{API_URL}/settings")
+    print_response(response, "GET /settings after updates:")
+    assert response.status_code == 200, "Failed to get settings"
+    updated_settings = response.json()
+    assert updated_settings["currency"] == "USD", "Currency update not persisted"
+    assert updated_settings["app_name"] == new_app_name, "App name update not persisted"
+    
+    # Test GET /currencies
+    response = requests.get(f"{API_URL}/currencies")
+    print_response(response, "GET /currencies:")
+    assert response.status_code == 200, "Failed to get currencies"
+    currencies = response.json()["currencies"]
+    assert len(currencies) >= 8, "Not all currencies are available"
+    
+    # Verify all required currencies are present
+    currency_codes = [c["code"] for c in currencies]
+    required_currencies = ["EUR", "USD", "XOF", "MAD", "TND", "GBP", "CHF", "CAD"]
+    for code in required_currencies:
+        assert code in currency_codes, f"Currency {code} is missing"
+    
+    # Test changing to each available currency
+    for currency in currencies:
+        code = currency["code"]
+        update_data = {
+            "currency": code,
+            "app_name": new_app_name
+        }
+        response = requests.put(f"{API_URL}/settings", json=update_data)
+        print_response(response, f"PUT /settings (update currency to {code}):")
+        assert response.status_code == 200, f"Failed to update currency to {code}"
+        assert response.json()["currency"] == code, f"Currency update to {code} failed"
+    
+    # Reset to EUR for other tests
+    update_data = {
+        "currency": "EUR",
+        "app_name": "Gestion Location Immobilière"  # Reset to original name
+    }
+    response = requests.put(f"{API_URL}/settings", json=update_data)
+    assert response.status_code == 200, "Failed to reset settings"
+    
+    print("\n✅ Settings and Currencies API tests passed successfully")
+
+def test_dashboard_api():
+    print_separator()
+    print("TESTING DASHBOARD API")
+    print_separator()
+    
+    # Test GET /dashboard
+    response = requests.get(f"{API_URL}/dashboard")
+    print_response(response, "GET /dashboard:")
+    assert response.status_code == 200, "Failed to get dashboard stats"
+    
+    # Verify dashboard data structure
+    dashboard_data = response.json()
+    assert "total_properties" in dashboard_data, "Dashboard missing total_properties"
+    assert "total_tenants" in dashboard_data, "Dashboard missing total_tenants"
+    assert "monthly_revenue" in dashboard_data, "Dashboard missing monthly_revenue"
+    assert "pending_payments" in dashboard_data, "Dashboard missing pending_payments"
+    assert "overdue_payments" in dashboard_data, "Dashboard missing overdue_payments"
+    assert "occupancy_rate" in dashboard_data, "Dashboard missing occupancy_rate"
+    assert "currency" in dashboard_data, "Dashboard missing currency"
+    assert "currency_symbol" in dashboard_data, "Dashboard missing currency_symbol"
+    
+    # Verify data types
+    assert isinstance(dashboard_data["total_properties"], int), "total_properties should be an integer"
+    assert isinstance(dashboard_data["total_tenants"], int), "total_tenants should be an integer"
+    assert isinstance(dashboard_data["monthly_revenue"], (int, float)), "monthly_revenue should be a number"
+    assert isinstance(dashboard_data["pending_payments"], int), "pending_payments should be an integer"
+    assert isinstance(dashboard_data["overdue_payments"], int), "overdue_payments should be an integer"
+    assert isinstance(dashboard_data["occupancy_rate"], (int, float)), "occupancy_rate should be a number"
+    assert isinstance(dashboard_data["currency"], str), "currency should be a string"
+    assert isinstance(dashboard_data["currency_symbol"], str), "currency_symbol should be a string"
+    
+    # Test dashboard with different currencies
+    currencies_to_test = ["USD", "XOF", "MAD"]
+    for currency in currencies_to_test:
+        # Update settings to change currency
+        update_data = {
+            "currency": currency,
+            "app_name": "Gestion Location Immobilière"
+        }
+        settings_response = requests.put(f"{API_URL}/settings", json=update_data)
+        assert settings_response.status_code == 200, f"Failed to update currency to {currency}"
+        
+        # Get dashboard with new currency
+        response = requests.get(f"{API_URL}/dashboard")
+        print_response(response, f"GET /dashboard with {currency} currency:")
+        assert response.status_code == 200, "Failed to get dashboard stats"
+        dashboard_data = response.json()
+        
+        # Verify currency is reflected in dashboard
+        assert dashboard_data["currency"] == currency, f"Dashboard currency not updated to {currency}"
+        
+        # Verify currency symbol matches the expected symbol
+        currency_symbols = {
+            "EUR": "€", "USD": "$", "XOF": "CFA", "MAD": "DH", 
+            "TND": "DT", "GBP": "£", "CHF": "CHF", "CAD": "C$"
+        }
+        expected_symbol = currency_symbols.get(currency)
+        assert dashboard_data["currency_symbol"] == expected_symbol, f"Currency symbol for {currency} is incorrect"
+    
+    # Reset to EUR for other tests
+    update_data = {
+        "currency": "EUR",
+        "app_name": "Gestion Location Immobilière"
+    }
+    requests.put(f"{API_URL}/settings", json=update_data)
+    
+    print("\n✅ Dashboard API tests passed successfully")
+
 def run_all_tests():
     try:
         print("\n🔍 Starting backend API tests...\n")
@@ -405,7 +551,10 @@ def run_all_tests():
         print_response(response, "GET /:")
         assert response.status_code == 200, "Root endpoint not working"
         
-        # Run all tests in sequence
+        # Test settings and currencies first
+        test_settings_and_currencies_api()
+        
+        # Run all other tests in sequence
         properties = test_properties_api()
         tenants = test_tenants_api(properties)
         test_payments_api(tenants)
