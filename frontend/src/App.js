@@ -373,6 +373,7 @@ function MainApp() {
   useEffect(() => {
     fetchDashboardStats();
     fetchProperties();
+    fetchUnits();
     fetchTenants();
     fetchPayments();
     fetchSettings();
