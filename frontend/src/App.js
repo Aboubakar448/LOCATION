@@ -440,6 +440,12 @@ function MainApp() {
           >
             🧾 Reçus
           </button>
+          <button 
+            className={`nav-btn ${currentView === 'search' ? 'active' : ''}`}
+            onClick={() => setCurrentView('search')}
+          >
+            🔍 Recherche Historique
+          </button>
           {user.role === 'admin' && (
             <button 
               className={`nav-btn ${currentView === 'admin' ? 'active' : ''}`}
