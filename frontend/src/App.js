@@ -329,25 +329,16 @@ function MainApp() {
 
   // Initial data load
   useEffect(() => {
-    if (user) {
-      fetchDashboardStats();
-      fetchProperties();
-      fetchTenants();
-      fetchPayments();
-      fetchSettings();
-      fetchCurrencies();
-      fetchReceipts();
-    }
-  }, [user]);
+    fetchDashboardStats();
+    fetchProperties();
+    fetchTenants();
+    fetchPayments();
+    fetchSettings();
+    fetchCurrencies();
+    fetchReceipts();
+  }, []);
   
-  // Early returns après tous les hooks
-  if (loading) {
-    return <div className="loading-screen">Chargement...</div>;
-  }
-
-  if (!user) {
-    return <Login />;
-  }
+  // Pas de vérification d'authentification pour la version simple
 
   return (
     <div className="app">
