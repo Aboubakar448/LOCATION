@@ -454,7 +454,7 @@ function Properties({ properties, settings, onRefresh }) {
 }
 
 // Tenants Component
-function Tenants({ tenants, properties, onRefresh }) {
+function Tenants({ tenants, properties, settings, onRefresh }) {
   const [showForm, setShowForm] = useState(false);
   const [editingTenant, setEditingTenant] = useState(null);
   const [formData, setFormData] = useState({
