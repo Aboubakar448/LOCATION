@@ -352,45 +352,63 @@ function MainApp() {
       <header className="header">
         <div className="header-content">
           <h1 className="header-title">🏠 {settings?.app_name || 'Gestion Location Immobilière'}</h1>
-          <nav className="nav">
-            <button 
-              className={`nav-btn ${currentView === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setCurrentView('dashboard')}
-            >
-              📊 Tableau de Bord
+          <div className="header-right">
+            <div className="user-info">
+              <span>👤 {user.full_name}</span>
+              <span className={`role-badge ${user.role}`}>{user.role}</span>
+              <span>💰 FCFA</span>
+            </div>
+            <button onClick={logout} className="logout-btn">
+              🚪 Déconnexion
             </button>
-            <button 
-              className={`nav-btn ${currentView === 'properties' ? 'active' : ''}`}
-              onClick={() => setCurrentView('properties')}
-            >
-              🏢 Propriétés
-            </button>
-            <button 
-              className={`nav-btn ${currentView === 'tenants' ? 'active' : ''}`}
-              onClick={() => setCurrentView('tenants')}
-            >
-              👥 Locataires
-            </button>
-            <button 
-              className={`nav-btn ${currentView === 'payments' ? 'active' : ''}`}
-              onClick={() => setCurrentView('payments')}
-            >
-              💰 Paiements
-            </button>
-            <button 
-              className={`nav-btn ${currentView === 'receipts' ? 'active' : ''}`}
-              onClick={() => setCurrentView('receipts')}
-            >
-              🧾 Reçus
-            </button>
-            <button 
-              className={`nav-btn ${currentView === 'settings' ? 'active' : ''}`}
-              onClick={() => setCurrentView('settings')}
-            >
-              ⚙️ Paramètres
-            </button>
-          </nav>
+          </div>
         </div>
+        <nav className="nav">
+          <button 
+            className={`nav-btn ${currentView === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setCurrentView('dashboard')}
+          >
+            📊 Tableau de Bord
+          </button>
+          <button 
+            className={`nav-btn ${currentView === 'properties' ? 'active' : ''}`}
+            onClick={() => setCurrentView('properties')}
+          >
+            🏢 Propriétés
+          </button>
+          <button 
+            className={`nav-btn ${currentView === 'tenants' ? 'active' : ''}`}
+            onClick={() => setCurrentView('tenants')}
+          >
+            👥 Locataires
+          </button>
+          <button 
+            className={`nav-btn ${currentView === 'payments' ? 'active' : ''}`}
+            onClick={() => setCurrentView('payments')}
+          >
+            💰 Paiements
+          </button>
+          <button 
+            className={`nav-btn ${currentView === 'receipts' ? 'active' : ''}`}
+            onClick={() => setCurrentView('receipts')}
+          >
+            🧾 Reçus
+          </button>
+          {user.role === 'admin' && (
+            <button 
+              className={`nav-btn ${currentView === 'admin' ? 'active' : ''}`}
+              onClick={() => setCurrentView('admin')}
+            >
+              👥 Gestion Utilisateurs
+            </button>
+          )}
+          <button 
+            className={`nav-btn ${currentView === 'settings' ? 'active' : ''}`}
+            onClick={() => setCurrentView('settings')}
+          >
+            ⚙️ Paramètres
+          </button>
+        </nav>
       </header>
 
       {/* Main Content */}
