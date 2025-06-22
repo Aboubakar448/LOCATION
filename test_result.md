@@ -432,7 +432,9 @@ test_plan:
     - "Receipt Numbering"
     - "Receipt Print/PDF Functions"
     - "Mobile Interface for Receipts"
-  stuck_tasks: []
+    - "Authentication System"
+  stuck_tasks: 
+    - "Authentication System"
   test_all: true
   test_priority: "high_first"
 
