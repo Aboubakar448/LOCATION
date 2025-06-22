@@ -455,6 +455,14 @@ function Properties({ properties, settings, onRefresh }) {
 
 // Tenants Component
 function Tenants({ tenants, properties, settings, onRefresh }) {
+  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
+                         settings?.currency === 'USD' ? '$' : 
+                         settings?.currency === 'XOF' ? 'CFA' : 
+                         settings?.currency === 'MAD' ? 'DH' : 
+                         settings?.currency === 'TND' ? 'DT' : 
+                         settings?.currency === 'GBP' ? '£' : 
+                         settings?.currency === 'CHF' ? 'CHF' : 
+                         settings?.currency === 'CAD' ? 'C$' : '€';
   const [showForm, setShowForm] = useState(false);
   const [editingTenant, setEditingTenant] = useState(null);
   const [formData, setFormData] = useState({
