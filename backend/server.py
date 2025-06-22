@@ -161,19 +161,42 @@ class Tenant(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     email: Optional[str] = None
-    phone: Optional[str] = None
+    phone: str  # Obligatoire pour les reçus
     property_id: Optional[str] = None
+    unit_id: Optional[str] = None  # Appartement/Studio spécifique
     start_date: Optional[str] = None
+    end_date: Optional[str] = None  # Date de fin de bail
     monthly_rent: Optional[float] = None
+    deposit_amount: Optional[float] = None  # Caution
+    months_paid: int = 0  # Nombre de mensualités payées
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class TenantCreate(BaseModel):
     name: str
     email: Optional[str] = None
-    phone: Optional[str] = None
+    phone: str
     property_id: Optional[str] = None
+    unit_id: Optional[str] = None
     start_date: Optional[str] = None
+    end_date: Optional[str] = None
     monthly_rent: Optional[float] = None
+    deposit_amount: Optional[float] = None
+
+class TenantHistory(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    tenant_name: str
+    property_id: str
+    property_name: str
+    unit_id: Optional[str] = None
+    unit_number: Optional[str] = None
+    start_date: str
+    end_date: Optional[str] = None
+    monthly_rent: float
+    total_paid: float
+    months_paid: int
+    action: str  # "moved_in", "moved_out", "rent_updated"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class Payment(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
