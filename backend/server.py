@@ -122,6 +122,29 @@ class PaymentCreate(BaseModel):
     status: PaymentStatus = PaymentStatus.pending
     paid_date: Optional[str] = None
 
+class Receipt(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    receipt_number: str
+    tenant_id: str
+    tenant_name: str
+    property_address: str
+    payment_id: str
+    amount: float
+    currency: str
+    currency_symbol: str
+    payment_date: str
+    period_month: int
+    period_year: int
+    payment_method: Optional[str] = "Espèces"
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class ReceiptCreate(BaseModel):
+    tenant_id: str
+    payment_id: str
+    payment_method: Optional[str] = "Espèces"
+    notes: Optional[str] = None
+
 class DashboardStats(BaseModel):
     total_properties: int
     total_tenants: int
