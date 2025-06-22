@@ -303,6 +303,90 @@ frontend:
       - working: true
         agent: "testing"
         comment: "Le système de reçus fonctionne correctement. Les reçus sont générés automatiquement lorsqu'un paiement est marqué comme payé. Le format du numéro de reçu suit bien le format REC-YYYYMM-XXXX. Les fonctionnalités d'impression et de téléchargement PDF sont opérationnelles. Le modal de reçu s'affiche correctement avec toutes les informations nécessaires."
+        
+  - task: "Backup to Phone"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "La fonctionnalité de sauvegarde sur téléphone est correctement implémentée. Le bouton '💾 Sauvegarder sur Téléphone' est présent dans l'onglet Paramètres et est fonctionnel. Le format du nom de fichier suit bien le format requis (gestion-location-backup-YYYY-MM-DD-HH-MM-SS.json)."
+        
+  - task: "Restore from Phone"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "La fonctionnalité de restauration depuis téléphone est correctement implémentée. Le bouton '📂 Restaurer depuis Téléphone' est présent dans l'onglet Paramètres. L'input file accepte uniquement les fichiers .json comme requis (attribut accept='.json')."
+        
+  - task: "Instant Receipt Search"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "La recherche instantanée des reçus fonctionne parfaitement. Le champ '🔍 Tapez le nom du locataire pour voir ses reçus...' permet de filtrer les reçus en temps réel. Les résultats s'affichent immédiatement pendant la saisie. Le bouton '✕' permet d'effacer la recherche."
+        
+  - task: "Tenant Receipts Grouping"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Le groupement des reçus par locataire fonctionne correctement. Lors de la recherche par nom de locataire, les reçus sont affichés dans un groupe avec le nom du locataire et le nombre de reçus. Le total des montants est correctement calculé et affiché pour chaque locataire."
+        
+  - task: "Receipt Numbering"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "La numérotation automatique des reçus fonctionne correctement. Les numéros de reçus suivent bien le format REC-YYYYMM-XXXX comme requis. Exemple vérifié: REC-202506-0001."
+        
+  - task: "Receipt Print/PDF Functions"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Les boutons d'impression ('🖨️ Imprimer') et de génération PDF ('📥 PDF') sont présents sur chaque reçu, mais le modal de reçu ne s'ouvre pas lors du clic sur ces boutons, ce qui empêche de tester complètement cette fonctionnalité. Problème détecté lors des tests avec Playwright."
+        
+  - task: "Mobile Interface for Receipts"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "L'interface mobile pour les reçus fonctionne correctement. La recherche instantanée et le groupement des reçus fonctionnent bien sur mobile. L'affichage s'adapte correctement aux différentes tailles d'écran (testé sur 390x844 pour mobile et 768x1024 pour tablette)."
 
 metadata:
   created_by: "main_agent"
