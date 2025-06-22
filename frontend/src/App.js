@@ -91,7 +91,7 @@ function App() {
       {/* Header */}
       <header className="header">
         <div className="header-content">
-          <h1 className="header-title">🏠 Gestion Location Immobilière</h1>
+          <h1 className="header-title">🏠 {settings?.app_name || 'Gestion Location Immobilière'}</h1>
           <nav className="nav">
             <button 
               className={`nav-btn ${currentView === 'dashboard' ? 'active' : ''}`}
@@ -116,6 +116,12 @@ function App() {
               onClick={() => setCurrentView('payments')}
             >
               💰 Paiements
+            </button>
+            <button 
+              className={`nav-btn ${currentView === 'settings' ? 'active' : ''}`}
+              onClick={() => setCurrentView('settings')}
+            >
+              ⚙️ Paramètres
             </button>
           </nav>
         </div>
