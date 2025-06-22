@@ -129,6 +129,81 @@ def test_properties_api():
     assert response.status_code == 404, "Property was not deleted"
     
     print("\n✅ Properties API tests passed successfully")
+    return created_properties[:-1]  # Return all but the deleted property
+
+# Helper functions
+def print_separator():
+    print("\n" + "="*80 + "\n")
+
+def print_response(response, message=""):
+    print(f"{message} Status Code: {response.status_code}")
+    try:
+        print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+    except:
+        print(response.text)
+
+# Test functions
+def test_properties_api():
+    print_separator()
+    print("TESTING PROPERTIES API")
+    print_separator()
+    
+    # Test GET /properties (empty initially)
+    response = requests.get(f"{API_URL}/properties")
+    print_response(response, "Initial GET /properties:")
+    assert response.status_code == 200, "Failed to get properties"
+    
+    # Test POST /properties
+    created_properties = []
+    for prop in test_properties:
+        response = requests.post(f"{API_URL}/properties", json=prop)
+        print_response(response, f"POST /properties ({prop['address']}):")
+        assert response.status_code == 200, "Failed to create property"
+        created_properties.append(response.json())
+    
+    # Test GET /properties (should have our test properties)
+    response = requests.get(f"{API_URL}/properties")
+    print_response(response, "GET /properties after creation:")
+    assert response.status_code == 200, "Failed to get properties"
+    assert len(response.json()) >= len(test_properties), "Not all properties were created"
+    
+    # Test GET /properties/{id}
+    property_id = created_properties[0]["id"]
+    response = requests.get(f"{API_URL}/properties/{property_id}")
+    print_response(response, f"GET /properties/{property_id}:")
+    assert response.status_code == 200, "Failed to get property by ID"
+    assert response.json()["id"] == property_id, "Property ID mismatch"
+    
+    # Test PUT /properties/{id}
+    update_data = {
+        "address": created_properties[0]["address"],
+        "monthly_rent": 1300.0,  # Updated rent
+        "description": created_properties[0]["description"] + " (Updated)",
+        "status": "occupé"
+    }
+    response = requests.put(f"{API_URL}/properties/{property_id}", json=update_data)
+    print_response(response, f"PUT /properties/{property_id}:")
+    assert response.status_code == 200, "Failed to update property"
+    assert response.json()["monthly_rent"] == 1300.0, "Property update failed"
+    assert response.json()["status"] == "occupé", "Property status update failed"
+    
+    # Test GET non-existent property
+    fake_id = str(uuid.uuid4())
+    response = requests.get(f"{API_URL}/properties/{fake_id}")
+    print_response(response, f"GET /properties/{fake_id} (non-existent):")
+    assert response.status_code == 404, "Should return 404 for non-existent property"
+    
+    # Test DELETE /properties/{id} for the last property
+    property_to_delete = created_properties[-1]["id"]
+    response = requests.delete(f"{API_URL}/properties/{property_to_delete}")
+    print_response(response, f"DELETE /properties/{property_to_delete}:")
+    assert response.status_code == 200, "Failed to delete property"
+    
+    # Verify deletion
+    response = requests.get(f"{API_URL}/properties/{property_to_delete}")
+    assert response.status_code == 404, "Property was not deleted"
+    
+    print("\n✅ Properties API tests passed successfully")
     return created_properties
 
 def test_tenants_api(properties):
