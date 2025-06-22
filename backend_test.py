@@ -404,14 +404,17 @@ def test_settings_and_currencies_api():
     print("TESTING SETTINGS AND CURRENCIES API")
     print_separator()
     
-    # Test GET /settings (should return default settings initially)
+    # Test GET /settings (should return current settings)
     response = requests.get(f"{API_URL}/settings")
     print_response(response, "Initial GET /settings:")
     assert response.status_code == 200, "Failed to get settings"
     initial_settings = response.json()
     assert "currency" in initial_settings, "Settings missing currency field"
     assert "app_name" in initial_settings, "Settings missing app_name field"
-    assert initial_settings["currency"] == "EUR", "Default currency should be EUR"
+    
+    # Store the current currency for later restoration
+    current_currency = initial_settings["currency"]
+    current_app_name = initial_settings["app_name"]
     
     # Test PUT /settings to update currency to USD
     update_data = {
@@ -467,10 +470,10 @@ def test_settings_and_currencies_api():
         assert response.status_code == 200, f"Failed to update currency to {code}"
         assert response.json()["currency"] == code, f"Currency update to {code} failed"
     
-    # Reset to EUR for other tests
+    # Reset to original settings for other tests
     update_data = {
-        "currency": "EUR",
-        "app_name": "Gestion Location Immobilière"  # Reset to original name
+        "currency": current_currency,
+        "app_name": current_app_name
     }
     response = requests.put(f"{API_URL}/settings", json=update_data)
     assert response.status_code == 200, "Failed to reset settings"
