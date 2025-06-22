@@ -203,6 +203,16 @@ function App() {
             properties={properties}
             settings={settings}
             onRefresh={fetchPayments}
+            onGenerateReceipt={generateReceipt}
+          />
+        )}
+        {currentView === 'receipts' && (
+          <Receipts 
+            receipts={receipts}
+            tenants={tenants}
+            properties={properties}
+            settings={settings}
+            onRefresh={fetchReceipts}
           />
         )}
         {currentView === 'settings' && (
@@ -216,6 +226,17 @@ function App() {
           />
         )}
       </main>
+
+      {/* Receipt Modal */}
+      {showReceiptModal && currentReceipt && (
+        <ReceiptModal 
+          receipt={currentReceipt}
+          onClose={() => {
+            setShowReceiptModal(false);
+            setCurrentReceipt(null);
+          }}
+        />
+      )}
     </div>
   );
 }
