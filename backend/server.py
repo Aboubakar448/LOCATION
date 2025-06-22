@@ -29,6 +29,14 @@ app = FastAPI(title="Gestion Location Immobilière")
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Authentication setup
+SECRET_KEY = "your-secret-key-change-in-production"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+
 # Enums
 class PropertyStatus(str, Enum):
     available = "disponible"
