@@ -542,6 +542,113 @@ def test_dashboard_api():
     
     print("\n✅ Dashboard API tests passed successfully")
 
+def test_receipts_api(tenants, payments):
+    print_separator()
+    print("TESTING RECEIPTS API")
+    print_separator()
+    
+    # Test GET /receipts (empty initially or with existing receipts)
+    response = requests.get(f"{API_URL}/receipts")
+    print_response(response, "Initial GET /receipts:")
+    assert response.status_code == 200, "Failed to get receipts"
+    initial_receipts_count = len(response.json())
+    
+    # Create test receipts for each payment that is marked as paid
+    created_receipts = []
+    
+    # First, mark some payments as paid if they aren't already
+    paid_payments = []
+    for i, payment in enumerate(payments[:2]):  # Use only the first two payments
+        if payment["status"] != "payé":
+            response = requests.put(f"{API_URL}/payments/{payment['id']}/mark-paid")
+            assert response.status_code == 200, f"Failed to mark payment {payment['id']} as paid"
+            paid_payments.append(response.json())
+        else:
+            paid_payments.append(payment)
+    
+    # Now create receipts for the paid payments
+    for payment in paid_payments:
+        receipt_data = {
+            "tenant_id": payment["tenant_id"],
+            "payment_id": payment["id"],
+            "payment_method": "Virement bancaire",
+            "notes": "Test receipt"
+        }
+        
+        response = requests.post(f"{API_URL}/receipts", json=receipt_data)
+        print_response(response, f"POST /receipts (Payment ID: {payment['id']}):")
+        assert response.status_code == 200, "Failed to create receipt"
+        created_receipts.append(response.json())
+    
+    # Test GET /receipts (should have our test receipts)
+    response = requests.get(f"{API_URL}/receipts")
+    print_response(response, "GET /receipts after creation:")
+    assert response.status_code == 200, "Failed to get receipts"
+    assert len(response.json()) >= initial_receipts_count + len(created_receipts), "Not all receipts were created"
+    
+    # Verify receipt number format (REC-YYYYMM-XXXX)
+    for receipt in created_receipts:
+        assert "receipt_number" in receipt, "Receipt is missing receipt_number"
+        receipt_number = receipt["receipt_number"]
+        assert receipt_number.startswith("REC-"), f"Receipt number {receipt_number} doesn't start with 'REC-'"
+        assert len(receipt_number) >= 12, f"Receipt number {receipt_number} is too short"
+        
+        # Extract year and month from receipt number
+        year_month = receipt_number.split("-")[1]
+        assert len(year_month) == 6, f"Year-month part of receipt number {receipt_number} is not 6 digits"
+        
+        # Extract sequence number
+        sequence = receipt_number.split("-")[2]
+        assert len(sequence) == 4, f"Sequence part of receipt number {receipt_number} is not 4 digits"
+        assert sequence.isdigit(), f"Sequence part of receipt number {receipt_number} is not a number"
+    
+    # Test GET /receipts/tenant/{tenant_id}
+    tenant_id = tenants[0]["id"]
+    response = requests.get(f"{API_URL}/receipts/tenant/{tenant_id}")
+    print_response(response, f"GET /receipts/tenant/{tenant_id}:")
+    assert response.status_code == 200, "Failed to get tenant receipts"
+    tenant_receipts = response.json()
+    
+    # Verify tenant receipts
+    for receipt in tenant_receipts:
+        assert receipt["tenant_id"] == tenant_id, f"Receipt {receipt['id']} has wrong tenant_id"
+        
+        # Verify receipt details
+        assert "amount" in receipt, "Receipt is missing amount"
+        assert "currency" in receipt, "Receipt is missing currency"
+        assert "currency_symbol" in receipt, "Receipt is missing currency_symbol"
+        assert "payment_date" in receipt, "Receipt is missing payment_date"
+        assert "period_month" in receipt, "Receipt is missing period_month"
+        assert "period_year" in receipt, "Receipt is missing period_year"
+        assert "property_address" in receipt, "Receipt is missing property_address"
+        assert "tenant_name" in receipt, "Receipt is missing tenant_name"
+    
+    # Test GET /receipts/{receipt_id}
+    receipt_id = created_receipts[0]["id"]
+    response = requests.get(f"{API_URL}/receipts/{receipt_id}")
+    print_response(response, f"GET /receipts/{receipt_id}:")
+    assert response.status_code == 200, "Failed to get receipt by ID"
+    assert response.json()["id"] == receipt_id, "Receipt ID mismatch"
+    
+    # Test GET non-existent receipt
+    fake_id = str(uuid.uuid4())
+    response = requests.get(f"{API_URL}/receipts/{fake_id}")
+    print_response(response, f"GET /receipts/{fake_id} (non-existent):")
+    assert response.status_code == 404, "Should return 404 for non-existent receipt"
+    
+    # Test DELETE /receipts/{receipt_id} for the last receipt
+    receipt_to_delete = created_receipts[-1]["id"]
+    response = requests.delete(f"{API_URL}/receipts/{receipt_to_delete}")
+    print_response(response, f"DELETE /receipts/{receipt_to_delete}:")
+    assert response.status_code == 200, "Failed to delete receipt"
+    
+    # Verify deletion
+    response = requests.get(f"{API_URL}/receipts/{receipt_to_delete}")
+    assert response.status_code == 404, "Receipt was not deleted"
+    
+    print("\n✅ Receipts API tests passed successfully")
+    return created_receipts
+
 def run_all_tests():
     try:
         print("\n🔍 Starting backend API tests...\n")
@@ -557,8 +664,11 @@ def run_all_tests():
         # Run all other tests in sequence
         properties = test_properties_api()
         tenants = test_tenants_api(properties)
-        test_payments_api(tenants)
+        payments = test_payments_api(tenants)
         test_dashboard_api()
+        
+        # Test the new receipts system
+        test_receipts_api(tenants, payments)
         
         print_separator()
         print("🎉 ALL BACKEND API TESTS PASSED SUCCESSFULLY! 🎉")
