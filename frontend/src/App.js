@@ -802,7 +802,7 @@ function Payments({ payments, tenants, properties, settings, onRefresh }) {
               <p>{monthNames[payment.month - 1]} {payment.year}</p>
             </div>
             <div className="payment-amount">
-              <span className="amount">{payment.amount}€</span>
+              <span className="amount">{payment.amount}{currencySymbol}</span>
               <span className={`status ${payment.status}`}>
                 {payment.status === 'payé' ? '✅ Payé' : 
                  payment.status === 'en_attente' ? '⏰ En attente' : '⚠️ En retard'}
