@@ -978,11 +978,12 @@ function Payments({ payments, tenants, properties, settings, onRefresh, onGenera
 }
 
 // Settings Component
-function Settings({ settings, currencies, onRefresh }) {
+function Settings({ settings, currencies, onRefresh, onBackup, onRestore, loading }) {
   const [formData, setFormData] = useState({
     currency: settings?.currency || 'EUR',
     app_name: settings?.app_name || 'Gestion Location Immobilière'
   });
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   useEffect(() => {
     if (settings) {
@@ -1005,6 +1006,18 @@ function Settings({ settings, currencies, onRefresh }) {
     }
   };
 
+  const handleFileRestore = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type === 'application/json') {
+        onRestore(file);
+        setFileInputKey(prev => prev + 1); // Reset file input
+      } else {
+        alert('❌ Veuillez sélectionner un fichier JSON de sauvegarde');
+      }
+    }
+  };
+
   if (!settings) {
     return <div className="loading">Chargement des paramètres...</div>;
   }
@@ -1016,6 +1029,36 @@ function Settings({ settings, currencies, onRefresh }) {
       </div>
 
       <div className="settings-content">
+        <div className="settings-card">
+          <h3>📱 Sauvegarde sur Téléphone</h3>
+          <p>Sauvegardez toutes vos données directement sur votre téléphone</p>
+          
+          <div className="backup-actions">
+            <button 
+              className="backup-btn"
+              onClick={onBackup}
+              disabled={loading}
+            >
+              {loading ? '⏳ Sauvegarde...' : '💾 Sauvegarder sur Téléphone'}
+            </button>
+            
+            <div className="restore-section">
+              <label className="restore-label">
+                📂 Restaurer depuis Téléphone
+                <input
+                  key={fileInputKey}
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileRestore}
+                  className="restore-input"
+                  disabled={loading}
+                />
+              </label>
+              <p className="restore-hint">Sélectionnez un fichier .json de sauvegarde</p>
+            </div>
+          </div>
+        </div>
+
         <div className="settings-card">
           <h3>Configuration Générale</h3>
           <form onSubmit={handleSubmit}>
@@ -1067,6 +1110,33 @@ function Settings({ settings, currencies, onRefresh }) {
               <span className="info-value">
                 {new Date(settings.updated_at).toLocaleDateString('fr-FR')}
               </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-card">
+          <h3>Guide d'utilisation des Reçus</h3>
+          <div className="usage-guide">
+            <div className="guide-item">
+              <span className="guide-icon">📝</span>
+              <div>
+                <strong>Numéros automatiques:</strong>
+                <p>Les reçus sont numérotés automatiquement au format REC-YYYYMM-XXXX</p>
+              </div>
+            </div>
+            <div className="guide-item">
+              <span className="guide-icon">🔍</span>
+              <div>
+                <strong>Recherche instantanée:</strong>
+                <p>Tapez le nom d'un locataire pour voir tous ses reçus groupés</p>
+              </div>
+            </div>
+            <div className="guide-item">
+              <span className="guide-icon">💾</span>
+              <div>
+                <strong>Sauvegarde:</strong>
+                <p>Toutes vos données sont sauvegardées directement sur votre téléphone</p>
+              </div>
             </div>
           </div>
         </div>
