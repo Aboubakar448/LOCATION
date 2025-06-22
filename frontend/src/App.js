@@ -351,6 +351,9 @@ function MainApp() {
               <span>👤 {user.full_name}</span>
               <span className={`role-badge ${user.role}`}>{user.role}</span>
               <span>💰 FCFA</span>
+              <span style={{background: 'rgba(255,255,255,0.2)', padding: '0.5rem 1rem', borderRadius: '15px', fontSize: '0.875rem'}}>
+                Version Simple - Accès Direct
+              </span>
             </div>
             <button onClick={logout} className="logout-btn">
               🚪 Déconnexion
