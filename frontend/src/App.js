@@ -477,7 +477,18 @@ function MainApp() {
             settings={settings}
             onRefresh={() => {
               fetchProperties();
-              autoBackup(); // Sauvegarde automatique
+              autoBackup();
+            }}
+          />
+        )}
+        {currentView === 'units' && (
+          <Units 
+            units={units}
+            properties={properties} 
+            settings={settings}
+            onRefresh={() => {
+              fetchUnits();
+              autoBackup();
             }}
           />
         )}
@@ -485,10 +496,11 @@ function MainApp() {
           <Tenants 
             tenants={tenants} 
             properties={properties}
+            units={units}
             settings={settings}
             onRefresh={() => {
               fetchTenants();
-              autoBackup(); // Sauvegarde automatique
+              autoBackup();
             }}
           />
         )}
