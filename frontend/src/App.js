@@ -1401,6 +1401,15 @@ function Receipts({ receipts, tenants, properties, settings, onRefresh }) {
                     >
                       📥 PDF
                     </button>
+                    <button 
+                      className="view-btn"
+                      onClick={() => {
+                        setCurrentReceipt(receipt);
+                        setShowReceiptModal(true);
+                      }}
+                    >
+                      👁️ Voir
+                    </button>
                   </div>
                 </div>
               ))}
