@@ -417,30 +417,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Properties CRUD API"
-    - "Tenants CRUD API"
-    - "Payments CRUD API"
-    - "Dashboard Statistics API"
-    - "Settings API"
-    - "Currencies API"
-    - "Receipts CRUD API"
-    - "Responsive UI Design"
     - "Properties Management"
-    - "Tenants Management"
-    - "Payments Tracking"
-    - "Dashboard with Statistics"
-    - "Currency Management"
-    - "Receipts System"
-    - "Backup to Phone"
-    - "Restore from Phone"
-    - "Instant Receipt Search"
-    - "Tenant Receipts Grouping"
-    - "Receipt Numbering"
-    - "Receipt Print/PDF Functions"
-    - "Mobile Interface for Receipts"
-    - "Authentication System"
-  stuck_tasks: []
-  test_all: true
+  stuck_tasks:
+    - "Properties Management"
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
