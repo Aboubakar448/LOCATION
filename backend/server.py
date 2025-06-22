@@ -422,6 +422,104 @@ async def delete_receipt(receipt_id: str):
         raise HTTPException(status_code=404, detail="Reçu non trouvé")
     return {"message": "Reçu supprimé"}
 
+# Backup/Restore endpoints
+@api_router.get("/backup")
+async def backup_data():
+    """Export all application data as JSON"""
+    try:
+        # Get all data
+        properties = await db.properties.find().to_list(1000)
+        tenants = await db.tenants.find().to_list(1000)
+        payments = await db.payments.find().to_list(1000)
+        receipts = await db.receipts.find().to_list(1000)
+        settings = await db.settings.find_one({})
+        
+        # Create backup data
+        backup_data = {
+            "backup_date": datetime.now().isoformat(),
+            "app_version": "1.0",
+            "properties": properties,
+            "tenants": tenants,
+            "payments": payments,
+            "receipts": receipts,
+            "settings": settings or {},
+            "total_records": {
+                "properties": len(properties),
+                "tenants": len(tenants),
+                "payments": len(payments),
+                "receipts": len(receipts)
+            }
+        }
+        
+        return backup_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la sauvegarde: {str(e)}")
+
+@api_router.post("/restore")
+async def restore_data(backup_data: dict):
+    """Restore all application data from JSON backup"""
+    try:
+        # Clear existing data (optional - can be made configurable)
+        # await db.properties.delete_many({})
+        # await db.tenants.delete_many({})
+        # await db.payments.delete_many({})
+        # await db.receipts.delete_many({})
+        
+        # Restore properties
+        if "properties" in backup_data and backup_data["properties"]:
+            for prop in backup_data["properties"]:
+                # Remove MongoDB _id if present
+                prop.pop("_id", None)
+                existing = await db.properties.find_one({"id": prop["id"]})
+                if not existing:
+                    await db.properties.insert_one(prop)
+        
+        # Restore tenants
+        if "tenants" in backup_data and backup_data["tenants"]:
+            for tenant in backup_data["tenants"]:
+                tenant.pop("_id", None)
+                existing = await db.tenants.find_one({"id": tenant["id"]})
+                if not existing:
+                    await db.tenants.insert_one(tenant)
+        
+        # Restore payments
+        if "payments" in backup_data and backup_data["payments"]:
+            for payment in backup_data["payments"]:
+                payment.pop("_id", None)
+                existing = await db.payments.find_one({"id": payment["id"]})
+                if not existing:
+                    await db.payments.insert_one(payment)
+        
+        # Restore receipts
+        if "receipts" in backup_data and backup_data["receipts"]:
+            for receipt in backup_data["receipts"]:
+                receipt.pop("_id", None)
+                existing = await db.receipts.find_one({"id": receipt["id"]})
+                if not existing:
+                    await db.receipts.insert_one(receipt)
+        
+        # Restore settings
+        if "settings" in backup_data and backup_data["settings"]:
+            settings = backup_data["settings"]
+            settings.pop("_id", None)
+            if settings:
+                existing = await db.settings.find_one({})
+                if existing:
+                    await db.settings.update_one(
+                        {"id": existing["id"]},
+                        {"$set": settings}
+                    )
+                else:
+                    await db.settings.insert_one(settings)
+        
+        return {
+            "message": "Données restaurées avec succès",
+            "restored_records": backup_data.get("total_records", {}),
+            "restore_date": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la restauration: {str(e)}")
+
 # Dashboard endpoint
 @api_router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
