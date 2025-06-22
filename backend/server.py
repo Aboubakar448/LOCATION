@@ -87,7 +87,7 @@ class PaymentCreate(BaseModel):
     year: int
     amount: float
     status: PaymentStatus = PaymentStatus.pending
-    paid_date: Optional[date] = None
+    paid_date: Optional[str] = None
 
 class DashboardStats(BaseModel):
     total_properties: int
