@@ -148,6 +148,7 @@ def test_tenants_api(properties):
         if i < len(properties):
             tenant["property_id"] = properties[i]["id"]
             tenant["monthly_rent"] = properties[i]["monthly_rent"]
+            # Use ISO format string for date instead of date object
             tenant["start_date"] = datetime.now().strftime("%Y-%m-%d")
         
         response = requests.post(f"{API_URL}/tenants", json=tenant)
