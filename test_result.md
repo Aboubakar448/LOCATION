@@ -226,7 +226,7 @@ frontend:
     file: "/app/frontend/src/App.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -237,6 +237,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "L'ajout de propriété ne fonctionne pas. Lors de la soumission du formulaire, aucune requête API n'est envoyée au serveur. Les logs de la console montrent que toutes les requêtes API sont bloquées avec l'erreur 'net::ERR_ABORTED'. Le formulaire reste ouvert après la tentative de soumission, ce qui confirme que la requête n'a pas été traitée. Ce problème semble être lié à la configuration du serveur backend ou à des problèmes de réseau."
+      - working: false
+        agent: "testing"
+        comment: "Après de nouveaux tests, le problème persiste. Toutes les requêtes API sont bloquées avec l'erreur 'net::ERR_ABORTED'. Le backend semble fonctionner correctement (les logs montrent des réponses 200 OK pour les requêtes GET), mais les requêtes POST depuis le frontend sont bloquées. Ce problème affecte également l'ajout de locataires et probablement toutes les autres opérations d'écriture. Il s'agit probablement d'un problème de configuration CORS ou de proxy dans l'environnement de déploiement."
 
   - task: "Tenants Management"
     implemented: true
