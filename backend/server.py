@@ -575,12 +575,40 @@ async def create_tenant(tenant_data: TenantCreate):
     tenant_obj = Tenant(**tenant_dict)
     await db.tenants.insert_one(tenant_obj.dict())
     
-    # Update property status if property_id is provided
-    if tenant_obj.property_id:
+    # Update unit status if unit_id is provided
+    if tenant_obj.unit_id:
+        await db.units.update_one(
+            {"id": tenant_obj.unit_id},
+            {"$set": {"status": PropertyStatus.occupied}}
+        )
+    elif tenant_obj.property_id:
         await db.properties.update_one(
             {"id": tenant_obj.property_id},
             {"$set": {"status": PropertyStatus.occupied}}
         )
+    
+    # Create history entry
+    if tenant_obj.property_id:
+        property_data = await db.properties.find_one({"id": tenant_obj.property_id})
+        unit_data = None
+        if tenant_obj.unit_id:
+            unit_data = await db.units.find_one({"id": tenant_obj.unit_id})
+        
+        history_entry = TenantHistory(
+            tenant_id=tenant_obj.id,
+            tenant_name=tenant_obj.name,
+            property_id=tenant_obj.property_id,
+            property_name=property_data["address"] if property_data else "Inconnue",
+            unit_id=tenant_obj.unit_id,
+            unit_number=unit_data["unit_number"] if unit_data else None,
+            start_date=tenant_obj.start_date or datetime.now().strftime("%Y-%m-%d"),
+            end_date=tenant_obj.end_date,
+            monthly_rent=tenant_obj.monthly_rent or 0,
+            total_paid=0,
+            months_paid=0,
+            action="moved_in"
+        )
+        await db.tenant_history.insert_one(history_entry.dict())
     
     return tenant_obj
 
