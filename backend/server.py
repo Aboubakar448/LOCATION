@@ -57,7 +57,7 @@ class Tenant(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     property_id: Optional[str] = None
-    start_date: Optional[date] = None
+    start_date: Optional[str] = None
     monthly_rent: Optional[float] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
