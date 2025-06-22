@@ -900,6 +900,22 @@ async def restore_data(backup_data: dict):
                 if not existing:
                     await db.properties.insert_one(prop)
         
+        # Restore units
+        if "units" in backup_data and backup_data["units"]:
+            for unit in backup_data["units"]:
+                unit.pop("_id", None)
+                existing = await db.units.find_one({"id": unit["id"]})
+                if not existing:
+                    await db.units.insert_one(unit)
+        
+        # Restore tenant history
+        if "tenant_history" in backup_data and backup_data["tenant_history"]:
+            for history in backup_data["tenant_history"]:
+                history.pop("_id", None)
+                existing = await db.tenant_history.find_one({"id": history["id"]})
+                if not existing:
+                    await db.tenant_history.insert_one(history)
+        
         # Restore tenants
         if "tenants" in backup_data and backup_data["tenants"]:
             for tenant in backup_data["tenants"]:
