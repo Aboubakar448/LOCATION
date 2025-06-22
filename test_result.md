@@ -366,15 +366,18 @@ frontend:
         
   - task: "Receipt Print/PDF Functions"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "Les boutons d'impression ('🖨️ Imprimer') et de génération PDF ('📥 PDF') sont présents sur chaque reçu, mais le modal de reçu ne s'ouvre pas lors du clic sur ces boutons, ce qui empêche de tester complètement cette fonctionnalité. Problème détecté lors des tests avec Playwright."
+      - working: true
+        agent: "testing"
+        comment: "Le problème du modal de reçu a été résolu. Les tests montrent que le bouton '👁️ Voir' a été ajouté et fonctionne correctement. Le modal s'ouvre maintenant avec toutes les informations du reçu (numéro de reçu, informations du locataire, détails du paiement). Les boutons d'impression et de téléchargement PDF dans le modal sont également présents et fonctionnels. La recherche instantanée des reçus fonctionne parfaitement."
         
   - task: "Mobile Interface for Receipts"
     implemented: true
