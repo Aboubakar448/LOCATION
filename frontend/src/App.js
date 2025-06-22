@@ -335,14 +335,16 @@ function MainApp() {
 
   // Initial data load
   useEffect(() => {
-    fetchDashboardStats();
-    fetchProperties();
-    fetchTenants();
-    fetchPayments();
-    fetchSettings();
-    fetchCurrencies();
-    fetchReceipts();
-  }, []);
+    if (user) {
+      fetchDashboardStats();
+      fetchProperties();
+      fetchTenants();
+      fetchPayments();
+      fetchSettings();
+      fetchCurrencies();
+      fetchReceipts();
+    }
+  }, [user]);
 
   return (
     <div className="app">
