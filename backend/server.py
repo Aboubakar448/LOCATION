@@ -261,7 +261,11 @@ async def create_default_admin():
 # Routes
 @api_router.get("/")
 async def root():
-    return {"message": "API Gestion Location Immobilière"}
+    return {"message": "API Gestion Location Immobilière - Authentification requise"}
+
+@api_router.get("/health")
+async def health():
+    return {"status": "ok"}
 
 # Authentication endpoints
 @api_router.post("/auth/login", response_model=Token)
