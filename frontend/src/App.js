@@ -158,6 +158,12 @@ function App() {
               💰 Paiements
             </button>
             <button 
+              className={`nav-btn ${currentView === 'receipts' ? 'active' : ''}`}
+              onClick={() => setCurrentView('receipts')}
+            >
+              🧾 Reçus
+            </button>
+            <button 
               className={`nav-btn ${currentView === 'settings' ? 'active' : ''}`}
               onClick={() => setCurrentView('settings')}
             >
