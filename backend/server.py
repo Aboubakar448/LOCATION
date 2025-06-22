@@ -346,6 +346,82 @@ async def delete_payment(payment_id: str):
         raise HTTPException(status_code=404, detail="Paiement non trouvé")
     return {"message": "Paiement supprimé"}
 
+# Receipts endpoints
+@api_router.post("/receipts", response_model=Receipt)
+async def create_receipt(receipt_data: ReceiptCreate):
+    # Get payment details
+    payment = await db.payments.find_one({"id": receipt_data.payment_id})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Paiement non trouvé")
+    
+    # Get tenant details
+    tenant = await db.tenants.find_one({"id": receipt_data.tenant_id})
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Locataire non trouvé")
+    
+    # Get property details
+    property_data = await db.properties.find_one({"id": payment["property_id"]})
+    if not property_data:
+        raise HTTPException(status_code=404, detail="Propriété non trouvée")
+    
+    # Get app settings for currency
+    settings = await db.settings.find_one({})
+    if not settings:
+        settings = {"currency": "EUR"}
+    
+    currency = settings.get("currency", "EUR")
+    currency_symbol = CURRENCY_SYMBOLS.get(currency, "€")
+    
+    # Generate receipt number
+    current_date = datetime.now()
+    receipt_count = await db.receipts.count_documents({}) + 1
+    receipt_number = f"REC-{current_date.year}{current_date.month:02d}-{receipt_count:04d}"
+    
+    # Create receipt
+    receipt_dict = {
+        "receipt_number": receipt_number,
+        "tenant_id": receipt_data.tenant_id,
+        "tenant_name": tenant["name"],
+        "property_address": property_data["address"],
+        "payment_id": receipt_data.payment_id,
+        "amount": payment["amount"],
+        "currency": currency,
+        "currency_symbol": currency_symbol,
+        "payment_date": payment.get("paid_date", datetime.now().strftime("%Y-%m-%d")),
+        "period_month": payment["month"],
+        "period_year": payment["year"],
+        "payment_method": receipt_data.payment_method or "Espèces",
+        "notes": receipt_data.notes
+    }
+    
+    receipt_obj = Receipt(**receipt_dict)
+    await db.receipts.insert_one(receipt_obj.dict())
+    return receipt_obj
+
+@api_router.get("/receipts", response_model=List[Receipt])
+async def get_receipts():
+    receipts = await db.receipts.find().sort("created_at", -1).to_list(1000)
+    return [Receipt(**receipt) for receipt in receipts]
+
+@api_router.get("/receipts/tenant/{tenant_id}", response_model=List[Receipt])
+async def get_tenant_receipts(tenant_id: str):
+    receipts = await db.receipts.find({"tenant_id": tenant_id}).sort("created_at", -1).to_list(1000)
+    return [Receipt(**receipt) for receipt in receipts]
+
+@api_router.get("/receipts/{receipt_id}", response_model=Receipt)
+async def get_receipt(receipt_id: str):
+    receipt_data = await db.receipts.find_one({"id": receipt_id})
+    if not receipt_data:
+        raise HTTPException(status_code=404, detail="Reçu non trouvé")
+    return Receipt(**receipt_data)
+
+@api_router.delete("/receipts/{receipt_id}")
+async def delete_receipt(receipt_id: str):
+    result = await db.receipts.delete_one({"id": receipt_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Reçu non trouvé")
+    return {"message": "Reçu supprimé"}
+
 # Dashboard endpoint
 @api_router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
