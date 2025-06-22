@@ -1013,7 +1013,8 @@ body {
 
 .print-btn,
 .download-btn,
-.receipt-btn {
+.receipt-btn,
+.view-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -1028,7 +1029,8 @@ body {
 
 .print-btn:hover,
 .download-btn:hover,
-.receipt-btn:hover {
+.receipt-btn:hover,
+.view-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
@@ -1039,6 +1041,14 @@ body {
 
 .receipt-btn:hover {
   box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.view-btn:hover {
+  box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
 }
 
 .no-receipts {
