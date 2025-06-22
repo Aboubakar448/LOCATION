@@ -601,7 +601,7 @@ function Tenants({ tenants, properties, settings, onRefresh }) {
               {tenant.email && <p>📧 {tenant.email}</p>}
               {tenant.phone && <p>📞 {tenant.phone}</p>}
               <p>🏠 {getPropertyAddress(tenant.property_id)}</p>
-              {tenant.monthly_rent && <p>💰 {tenant.monthly_rent}€/mois</p>}
+              {tenant.monthly_rent && <p>💰 {tenant.monthly_rent}{currencySymbol}/mois</p>}
               {tenant.start_date && <p>📅 Depuis le {tenant.start_date}</p>}
             </div>
             <div className="card-actions">
