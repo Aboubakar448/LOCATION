@@ -227,6 +227,36 @@ function MainApp() {
   };
 
   // Backup data to phone
+  // Backup data to phone (automatique)
+  const autoBackup = async () => {
+    try {
+      const response = await axios.get(`${API}/backup`);
+      const backupData = response.data;
+      
+      // Create filename with current date
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      const filename = `gestion-location-auto-backup-${dateStr}-${timeStr}.json`;
+      
+      // Create and download file automatically
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      console.log(`✅ Sauvegarde automatique: ${filename}`);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde automatique:', error);
+    }
+  };
+
+  // Backup data to phone (manuel)
   const backupToPhone = async () => {
     try {
       setLoadingData(true);
