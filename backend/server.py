@@ -257,7 +257,9 @@ class ReceiptCreate(BaseModel):
 
 class DashboardStats(BaseModel):
     total_properties: int
+    total_units: int
     total_tenants: int
+    occupied_units: int
     monthly_revenue: float
     pending_payments: int
     overdue_payments: int
