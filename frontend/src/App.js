@@ -241,15 +241,45 @@ function Dashboard({ stats, onRefresh }) {
 }
 
 // Properties Component
-function Properties({ properties, onRefresh }) {
+function Properties({ properties, settings, onRefresh }) {
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
+  const [quickEditId, setQuickEditId] = useState(null);
+  const [quickEditRent, setQuickEditRent] = useState('');
   const [formData, setFormData] = useState({
     address: '',
     monthly_rent: '',
     description: '',
     status: 'disponible'
   });
+
+  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
+                         settings?.currency === 'USD' ? '$' : 
+                         settings?.currency === 'XOF' ? 'CFA' : 
+                         settings?.currency === 'MAD' ? 'DH' : 
+                         settings?.currency === 'TND' ? 'DT' : 
+                         settings?.currency === 'GBP' ? '£' : 
+                         settings?.currency === 'CHF' ? 'CHF' : 
+                         settings?.currency === 'CAD' ? 'C$' : '€';
+
+  const handleQuickRentEdit = async (propertyId, newRent) => {
+    try {
+      const property = properties.find(p => p.id === propertyId);
+      const data = {
+        address: property.address,
+        monthly_rent: parseFloat(newRent),
+        description: property.description,
+        status: property.status
+      };
+
+      await axios.put(`${API}/properties/${propertyId}`, data);
+      setQuickEditId(null);
+      setQuickEditRent('');
+      onRefresh();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du prix:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
