@@ -82,6 +82,8 @@ function App() {
     fetchProperties();
     fetchTenants();
     fetchPayments();
+    fetchSettings();
+    fetchCurrencies();
   }, []);
 
   return (
