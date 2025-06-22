@@ -77,7 +77,7 @@ class Payment(BaseModel):
     year: int
     amount: float
     status: PaymentStatus = PaymentStatus.pending
-    paid_date: Optional[date] = None
+    paid_date: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class PaymentCreate(BaseModel):
