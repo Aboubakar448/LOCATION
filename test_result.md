@@ -243,6 +243,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "Après les corrections du backend, l'API fonctionne correctement. J'ai pu créer une nouvelle propriété 'Villa Dakar Almadies' avec un loyer de 400000 CFA via l'API directement. La propriété est correctement enregistrée dans la base de données et apparaît dans la liste des propriétés retournée par l'API. Le dashboard affiche maintenant 3 propriétés au total."
+      - working: true
+        agent: "testing"
+        comment: "Lors des tests de la nouvelle structure de l'application, la section Propriétés fonctionne correctement. Le bouton d'ajout de propriété est présent et l'interface affiche correctement les propriétés existantes avec leurs détails (adresse, loyer mensuel en FCFA, statut). La navigation vers cette section fonctionne parfaitement."
 
   - task: "Tenants Management"
     implemented: true
