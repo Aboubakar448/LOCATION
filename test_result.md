@@ -265,6 +265,8 @@ test_plan:
     - "Tenants CRUD API"
     - "Payments CRUD API"
     - "Dashboard Statistics API"
+    - "Settings API"
+    - "Currencies API"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
