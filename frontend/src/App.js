@@ -450,7 +450,10 @@ function MainApp() {
           <Properties 
             properties={properties} 
             settings={settings}
-            onRefresh={fetchProperties}
+            onRefresh={() => {
+              fetchProperties();
+              autoBackup(); // Sauvegarde automatique
+            }}
           />
         )}
         {currentView === 'tenants' && (
@@ -458,7 +461,10 @@ function MainApp() {
             tenants={tenants} 
             properties={properties}
             settings={settings}
-            onRefresh={fetchTenants}
+            onRefresh={() => {
+              fetchTenants();
+              autoBackup(); // Sauvegarde automatique
+            }}
           />
         )}
         {currentView === 'payments' && (
@@ -467,8 +473,15 @@ function MainApp() {
             tenants={tenants}
             properties={properties}
             settings={settings}
-            onRefresh={fetchPayments}
-            onGenerateReceipt={generateReceipt}
+            onRefresh={() => {
+              fetchPayments();
+              autoBackup(); // Sauvegarde automatique
+            }}
+            onGenerateReceipt={async (payment, method, notes) => {
+              const receipt = await generateReceipt(payment, method, notes);
+              autoBackup(); // Sauvegarde automatique après génération de reçu
+              return receipt;
+            }}
           />
         )}
         {currentView === 'receipts' && (
@@ -477,7 +490,10 @@ function MainApp() {
             tenants={tenants}
             properties={properties}
             settings={settings}
-            onRefresh={fetchReceipts}
+            onRefresh={() => {
+              fetchReceipts();
+              autoBackup(); // Sauvegarde automatique
+            }}
             setCurrentReceipt={setCurrentReceipt}
             setShowReceiptModal={setShowReceiptModal}
           />
