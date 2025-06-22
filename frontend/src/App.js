@@ -897,6 +897,14 @@ function Payments({ payments, tenants, properties, settings, onRefresh, onGenera
                   ✅ Marquer payé
                 </button>
               )}
+              {payment.status === 'payé' && (
+                <button 
+                  className="receipt-btn"
+                  onClick={() => handleGenerateReceipt(payment)}
+                >
+                  🧾 Générer reçu
+                </button>
+              )}
             </div>
           </div>
         ))}
