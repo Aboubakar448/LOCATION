@@ -43,6 +43,12 @@ class UserRole(str, Enum):
     manager = "manager"
     viewer = "viewer"
 
+class UnitType(str, Enum):
+    appartement = "appartement"
+    studio = "studio"
+    maison = "maison"
+    commerce = "commerce"
+
 class PropertyStatus(str, Enum):
     available = "disponible"
     occupied = "occupé"
