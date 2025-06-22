@@ -535,10 +535,10 @@ async def update_payment(payment_id: str, payment_data: PaymentCreate):
 
 @api_router.put("/payments/{payment_id}/mark-paid")
 async def mark_payment_paid(payment_id: str):
-    # Use datetime.now().strftime("%Y-%m-%d") instead of date.today()
+    from datetime import date
     result = await db.payments.update_one(
         {"id": payment_id}, 
-        {"$set": {"status": PaymentStatus.paid, "paid_date": datetime.now().strftime("%Y-%m-%d")}}
+        {"$set": {"status": PaymentStatus.paid, "paid_date": date.today().strftime("%Y-%m-%d")}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Paiement non trouvé")
