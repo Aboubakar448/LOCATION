@@ -855,25 +855,31 @@ async def backup_data():
     try:
         # Get all data
         properties = await db.properties.find().to_list(1000)
+        units = await db.units.find().to_list(1000)
         tenants = await db.tenants.find().to_list(1000)
         payments = await db.payments.find().to_list(1000)
         receipts = await db.receipts.find().to_list(1000)
+        tenant_history = await db.tenant_history.find().to_list(1000)
         settings = await db.settings.find_one({})
         
         # Create backup data
         backup_data = {
             "backup_date": datetime.now().isoformat(),
-            "app_version": "1.0",
+            "app_version": "2.0",
             "properties": properties,
+            "units": units,
             "tenants": tenants,
             "payments": payments,
             "receipts": receipts,
+            "tenant_history": tenant_history,
             "settings": settings or {},
             "total_records": {
                 "properties": len(properties),
+                "units": len(units),
                 "tenants": len(tenants),
                 "payments": len(payments),
-                "receipts": len(receipts)
+                "receipts": len(receipts),
+                "tenant_history": len(tenant_history)
             }
         }
         
