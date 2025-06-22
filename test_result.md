@@ -192,6 +192,18 @@ backend:
         agent: "testing"
         comment: "L'endpoint GET /currencies fonctionne correctement et renvoie toutes les devises disponibles avec leurs codes, noms et symboles. Toutes les devises requises (EUR, USD, XOF, MAD, TND, etc.) sont présentes."
 
+  - task: "Receipts CRUD API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Tous les endpoints CRUD pour les reçus fonctionnent correctement. La création, lecture, et suppression des reçus sont opérationnelles. La génération automatique des numéros de reçus au format REC-YYYYMM-XXXX fonctionne parfaitement. Les reçus contiennent toutes les informations nécessaires (montant, devise, symbole de devise, date de paiement, période, adresse de propriété, nom du locataire). La récupération des reçus par locataire fonctionne correctement."
+
 frontend:
   - task: "Responsive UI Design"
     implemented: true
@@ -267,6 +279,7 @@ test_plan:
     - "Dashboard Statistics API"
     - "Settings API"
     - "Currencies API"
+    - "Receipts CRUD API"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
@@ -278,3 +291,5 @@ agent_communication:
     message: "Tests backend complets effectués. Tous les endpoints API fonctionnent correctement. Les problèmes de sérialisation des dates ont été résolus avec succès. Les dates sont maintenant correctement gérées au format ISO (YYYY-MM-DD). Tous les tests CRUD pour les propriétés, locataires et paiements passent avec succès. L'endpoint mark-paid fonctionne correctement et définit la date de paiement. Les statistiques du dashboard sont calculées correctement."
   - agent: "testing"
     message: "Tests des nouvelles fonctionnalités effectués avec succès. Les endpoints Settings API (GET/PUT /settings) fonctionnent correctement, avec création automatique des paramètres par défaut et mise à jour de la devise et du nom de l'application. L'endpoint Currencies API (GET /currencies) renvoie correctement toutes les devises disponibles avec leurs symboles. Le dashboard inclut maintenant les informations de devise qui reflètent les paramètres de l'application. Tous les tests passent avec succès."
+  - agent: "testing"
+    message: "Tests du système de reçus effectués avec succès. Tous les endpoints CRUD pour les reçus fonctionnent correctement. La génération automatique des numéros de reçus au format REC-YYYYMM-XXXX fonctionne parfaitement. Les reçus contiennent toutes les informations nécessaires (montant, devise, symbole de devise, date de paiement, période, adresse de propriété, nom du locataire). La récupération des reçus par locataire et la suppression des reçus fonctionnent correctement. Tous les tests passent avec succès."
