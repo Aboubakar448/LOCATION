@@ -410,7 +410,15 @@ test_plan:
     - "Dashboard with Statistics"
     - "Currency Management"
     - "Receipts System"
-  stuck_tasks: []
+    - "Backup to Phone"
+    - "Restore from Phone"
+    - "Instant Receipt Search"
+    - "Tenant Receipts Grouping"
+    - "Receipt Numbering"
+    - "Receipt Print/PDF Functions"
+    - "Mobile Interface for Receipts"
+  stuck_tasks: 
+    - "Receipt Print/PDF Functions"
   test_all: true
   test_priority: "high_first"
 
