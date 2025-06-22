@@ -157,7 +157,7 @@ function App() {
 }
 
 function MainApp() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, setLoading, logout } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [properties, setProperties] = useState([]);
