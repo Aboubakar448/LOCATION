@@ -155,9 +155,11 @@ function App() {
 }
 
 function MainApp() {
-  const { user, loading, logout } = useAuth();
+  // Simuler un utilisateur connecté pour la version simple
+  const user = { full_name: "Utilisateur", role: "admin" };
+  const loading = false;
+  const logout = () => alert("Déconnexion simulée");
   
-  // Tous les states déclarés d'abord
   const [currentView, setCurrentView] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [properties, setProperties] = useState([]);
