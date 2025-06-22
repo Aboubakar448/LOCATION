@@ -1238,8 +1238,88 @@ body {
   /* Add dark mode styles if needed */
 }
 
-/* Responsive Settings */
+/* Responsive Receipts */
 @media (max-width: 768px) {
+  .receipts-filters {
+    flex-direction: column;
+  }
+  
+  .receipt-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .receipt-actions {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .receipt-modal {
+    margin: 1rem;
+    max-width: none;
+  }
+  
+  .receipt-content {
+    padding: 1rem;
+  }
+  
+  .receipt-actions button {
+    min-width: 80px;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .receipt-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .receipt-number {
+    font-size: 1rem;
+  }
+  
+  .receipt-section {
+    padding: 0.75rem;
+  }
+  
+  .receipt-actions {
+    flex-direction: column;
+  }
+  
+  .receipt-actions button {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+/* Print Styles for Receipts */
+@media print {
+  .receipt-modal-overlay,
+  .modal-header,
+  .receipt-actions,
+  .close-btn {
+    display: none !important;
+  }
+  
+  .receipt-content {
+    box-shadow: none;
+    border: 1px solid #000;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .receipt-header h2 {
+    color: #000;
+  }
+  
+  .receipt-section {
+    background: white;
+    border: 1px solid #ccc;
+  }
+}
   .settings-content {
     gap: 1rem;
   }
