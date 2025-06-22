@@ -350,11 +350,13 @@ def test_payments_api(tenants):
     assert response.json()["status"] == "payé", "Payment status not updated to paid"
     assert response.json()["paid_date"] is not None, "Paid date not set"
     
-    # Test GET non-existent payment
+    # Test GET non-existent payment - Note: There's no direct GET endpoint for a single payment
+    # Instead, we'll test with a non-existent tenant ID which should return an empty list
     fake_id = str(uuid.uuid4())
-    response = requests.get(f"{API_URL}/payments/{fake_id}")
-    print_response(response, f"GET /payments/{fake_id} (non-existent):")
-    assert response.status_code == 404, "Should return 404 for non-existent payment"
+    response = requests.get(f"{API_URL}/payments/tenant/{fake_id}")
+    print_response(response, f"GET /payments/tenant/{fake_id} (non-existent tenant):")
+    assert response.status_code == 200, "Should return 200 with empty list for non-existent tenant"
+    assert len(response.json()) == 0, "Should return empty list for non-existent tenant"
     
     # Test DELETE /payments/{id} for the last payment
     payment_to_delete = created_payments[-1]["id"]
