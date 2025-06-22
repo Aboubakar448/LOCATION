@@ -960,6 +960,7 @@ async def get_dashboard_stats():
     
     # Get counts
     total_properties = await db.properties.count_documents({})
+    total_units = await db.units.count_documents({})
     total_tenants = await db.tenants.count_documents({})
     
     # Get current month/year
@@ -978,13 +979,15 @@ async def get_dashboard_stats():
     pending_payments = len([p for p in current_month_payments if p.get("status") == "en_attente"])
     overdue_payments = len([p for p in current_month_payments if p.get("status") == "en_retard"])
     
-    # Calculate occupancy rate
-    occupied_properties = await db.properties.count_documents({"status": "occupé"})
-    occupancy_rate = (occupied_properties / total_properties * 100) if total_properties > 0 else 0
+    # Calculate occupancy rate based on units
+    occupied_units = await db.units.count_documents({"status": "occupé"})
+    occupancy_rate = (occupied_units / total_units * 100) if total_units > 0 else 0
     
     return DashboardStats(
         total_properties=total_properties,
+        total_units=total_units,
         total_tenants=total_tenants,
+        occupied_units=occupied_units,
         monthly_revenue=monthly_revenue,
         pending_payments=pending_payments,
         overdue_payments=overdue_payments,
