@@ -231,15 +231,21 @@ class Receipt(BaseModel):
     receipt_number: str
     tenant_id: str
     tenant_name: str
-    property_address: str
+    tenant_phone: str
+    property_id: str
+    property_name: str
+    unit_id: Optional[str] = None
+    unit_number: Optional[str] = None
     payment_id: str
     amount: float
     currency: str
     currency_symbol: str
     payment_date: str
+    due_date: str
     period_month: int
     period_year: int
     payment_method: Optional[str] = "Espèces"
+    months_paid_total: int  # Nombre total de mois payés par ce locataire
     notes: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
