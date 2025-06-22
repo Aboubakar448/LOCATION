@@ -138,6 +138,7 @@ function App() {
         {currentView === 'properties' && (
           <Properties 
             properties={properties} 
+            settings={settings}
             onRefresh={fetchProperties}
           />
         )}
@@ -145,6 +146,7 @@ function App() {
           <Tenants 
             tenants={tenants} 
             properties={properties}
+            settings={settings}
             onRefresh={fetchTenants}
           />
         )}
@@ -153,7 +155,18 @@ function App() {
             payments={payments} 
             tenants={tenants}
             properties={properties}
+            settings={settings}
             onRefresh={fetchPayments}
+          />
+        )}
+        {currentView === 'settings' && (
+          <Settings 
+            settings={settings}
+            currencies={currencies}
+            onRefresh={() => {
+              fetchSettings();
+              fetchDashboardStats();
+            }}
           />
         )}
       </main>
