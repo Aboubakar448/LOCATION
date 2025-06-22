@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-weight: bold !important; /* TOUT LE TEXTE EN GRAS */
 }
 
 body {
@@ -10,6 +11,12 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   color: #333;
+  font-weight: bold !important;
+}
+
+/* Forcer le texte en gras partout */
+p, span, div, h1, h2, h3, h4, h5, h6, label, button, input, select, textarea, td, th, li {
+  font-weight: bold !important;
 }
 
 .app {
