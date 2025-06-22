@@ -198,10 +198,170 @@ class DashboardStats(BaseModel):
     currency: str
     currency_symbol: str
 
+# Authentication functions
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = await db.users.find_one({"username": username})
+    if user is None:
+        raise credentials_exception
+    return User(**user)
+
+async def get_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return current_user
+
+# Create default admin user if not exists
+async def create_default_admin():
+    admin_exists = await db.users.find_one({"role": "admin"})
+    if not admin_exists:
+        admin_user = User(
+            username="admin",
+            email="admin@example.com",
+            full_name="Administrateur",
+            role=UserRole.admin,
+            created_by="system"
+        )
+        
+        # Store user with hashed password
+        user_dict = admin_user.dict()
+        user_dict["hashed_password"] = get_password_hash("admin123")
+        await db.users.insert_one(user_dict)
+        print("Default admin user created: admin/admin123")
+
 # Routes
 @api_router.get("/")
 async def root():
     return {"message": "API Gestion Location Immobilière"}
+
+# Authentication endpoints
+@api_router.post("/auth/login", response_model=Token)
+async def login(user_login: UserLogin):
+    user = await db.users.find_one({"username": user_login.username})
+    if not user or not verify_password(user_login.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nom d'utilisateur ou mot de passe incorrect"
+        )
+    
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Compte désactivé"
+        )
+    
+    access_token = create_access_token(data={"sub": user["username"]})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_info": {
+            "id": user["id"],
+            "username": user["username"],
+            "full_name": user["full_name"],
+            "role": user["role"]
+        }
+    }
+
+@api_router.post("/auth/create-user", response_model=User)
+async def create_user(user_data: UserCreate, current_admin: User = Depends(get_admin_user)):
+    # Check if username already exists
+    existing_user = await db.users.find_one({"username": user_data.username})
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Nom d'utilisateur déjà existant"
+        )
+    
+    # Check if email already exists
+    existing_email = await db.users.find_one({"email": user_data.email})
+    if existing_email:
+        raise HTTPException(
+            status_code=400,
+            detail="Email déjà utilisé"
+        )
+    
+    # Create new user
+    user_dict = user_data.dict()
+    password = user_dict.pop("password")
+    
+    new_user = User(
+        **user_dict,
+        created_by=current_admin.id
+    )
+    
+    # Store user with hashed password
+    user_to_store = new_user.dict()
+    user_to_store["hashed_password"] = get_password_hash(password)
+    
+    await db.users.insert_one(user_to_store)
+    return new_user
+
+@api_router.get("/auth/users", response_model=List[User])
+async def get_users(current_admin: User = Depends(get_admin_user)):
+    users = await db.users.find().to_list(1000)
+    return [User(**{k: v for k, v in user.items() if k != "hashed_password"}) for user in users]
+
+@api_router.put("/auth/users/{user_id}/toggle-status")
+async def toggle_user_status(user_id: str, current_admin: User = Depends(get_admin_user)):
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    new_status = not user["is_active"]
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"is_active": new_status}}
+    )
+    
+    return {"message": f"Utilisateur {'activé' if new_status else 'désactivé'}"}
+
+@api_router.delete("/auth/users/{user_id}")
+async def delete_user(user_id: str, current_admin: User = Depends(get_admin_user)):
+    # Don't allow deleting yourself
+    if user_id == current_admin.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Vous ne pouvez pas supprimer votre propre compte"
+        )
+    
+    result = await db.users.delete_one({"id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    return {"message": "Utilisateur supprimé"}
+
+@api_router.get("/auth/me", response_model=User)
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
+    return current_user
 
 # Settings endpoints
 @api_router.get("/settings", response_model=AppSettings)
