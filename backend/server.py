@@ -38,6 +38,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 # Enums
+class UserRole(str, Enum):
+    admin = "admin"
+    manager = "manager"
+    viewer = "viewer"
+
 class PropertyStatus(str, Enum):
     available = "disponible"
     occupied = "occupé"
