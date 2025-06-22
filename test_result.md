@@ -390,6 +390,18 @@ frontend:
       - working: true
         agent: "testing"
         comment: "L'interface mobile pour les reçus fonctionne correctement. La recherche instantanée et le groupement des reçus fonctionnent bien sur mobile. L'affichage s'adapte correctement aux différentes tailles d'écran (testé sur 390x844 pour mobile et 768x1024 pour tablette)."
+        
+  - task: "Authentication System"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Le système d'authentification présente une erreur React liée aux hooks: 'Rendered more hooks than during the previous render'. La page de connexion s'affiche correctement avec les identifiants par défaut (admin/admin123) et l'affichage 'Devise: FCFA', mais la connexion échoue en raison de cette erreur. Le problème semble provenir du composant MainApp et est lié à l'ordre d'appel des hooks React. Une correction est nécessaire dans le code frontend pour résoudre ce problème d'authentification."
 
 metadata:
   created_by: "main_agent"
