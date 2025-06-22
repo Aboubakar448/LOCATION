@@ -232,4 +232,4 @@ test_plan:
 
 agent_communication:
   - agent: "main"
-    message: "Application de base créée avec toutes les fonctionnalités CRUD. Prêt pour test backend complet avec tous les endpoints."
+    message: "Application de base créée avec toutes les fonctionnalités CRUD. Corrigé problèmes de sérialisation des dates MongoDB (changé types date en string). Prêt pour test backend complet."
