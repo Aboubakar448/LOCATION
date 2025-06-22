@@ -149,6 +149,15 @@ function Login() {
 
 // Main App Component
 function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  );
+}
+
+function MainApp() {
+  const { user, loading, logout } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -157,9 +166,17 @@ function App() {
   const [receipts, setReceipts] = useState([]);
   const [settings, setSettings] = useState(null);
   const [currencies, setCurrencies] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [currentReceipt, setCurrentReceipt] = useState(null);
+
+  if (loading) {
+    return <div className="loading-screen">Chargement...</div>;
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   // Fetch app settings
   const fetchSettings = async () => {
