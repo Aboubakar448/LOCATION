@@ -163,9 +163,11 @@ function MainApp() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [properties, setProperties] = useState([]);
+  const [units, setUnits] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [payments, setPayments] = useState([]);
   const [receipts, setReceipts] = useState([]);
+  const [tenantHistory, setTenantHistory] = useState([]);
   const [settings, setSettings] = useState(null);
   const [currencies, setCurrencies] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
