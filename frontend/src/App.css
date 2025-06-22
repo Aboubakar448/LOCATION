@@ -1320,6 +1320,7 @@ body {
     border: 1px solid #ccc;
   }
 }
+@media (max-width: 768px) {
   .settings-content {
     gap: 1rem;
   }
