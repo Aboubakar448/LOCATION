@@ -75,6 +75,67 @@ function App() {
     }
   };
 
+  // Backup data to phone
+  const backupToPhone = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/backup`);
+      const backupData = response.data;
+      
+      // Create filename with current date
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      const filename = `gestion-location-backup-${dateStr}-${timeStr}.json`;
+      
+      // Create and download file
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      alert(`✅ Sauvegarde téléchargée sur votre téléphone !\nFichier: ${filename}`);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('❌ Erreur lors de la sauvegarde');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Restore data from phone
+  const restoreFromPhone = async (file) => {
+    try {
+      setLoading(true);
+      const fileContent = await file.text();
+      const backupData = JSON.parse(fileContent);
+      
+      const response = await axios.post(`${API}/restore`, backupData);
+      
+      // Refresh all data
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchProperties(),
+        fetchTenants(),
+        fetchPayments(),
+        fetchReceipts(),
+        fetchSettings()
+      ]);
+      
+      alert(`✅ Données restaurées avec succès !\n${JSON.stringify(response.data.restored_records, null, 2)}`);
+    } catch (error) {
+      console.error('Erreur lors de la restauration:', error);
+      alert('❌ Erreur lors de la restauration. Vérifiez le fichier de sauvegarde.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
     try {
