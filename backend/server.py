@@ -523,6 +523,51 @@ async def delete_property(property_id: str):
         raise HTTPException(status_code=404, detail="Propriété non trouvée")
     return {"message": "Propriété supprimée"}
 
+# Units endpoints (Appartements/Studios)
+@api_router.post("/units", response_model=Unit)
+async def create_unit(unit_data: UnitCreate):
+    unit_dict = unit_data.dict()
+    unit_obj = Unit(**unit_dict)
+    await db.units.insert_one(unit_obj.dict())
+    return unit_obj
+
+@api_router.get("/units", response_model=List[Unit])
+async def get_units():
+    units = await db.units.find().to_list(1000)
+    return [Unit(**unit) for unit in units]
+
+@api_router.get("/units/property/{property_id}", response_model=List[Unit])
+async def get_property_units(property_id: str):
+    units = await db.units.find({"property_id": property_id}).to_list(1000)
+    return [Unit(**unit) for unit in units]
+
+@api_router.get("/units/{unit_id}", response_model=Unit)
+async def get_unit(unit_id: str):
+    unit_data = await db.units.find_one({"id": unit_id})
+    if not unit_data:
+        raise HTTPException(status_code=404, detail="Unité non trouvée")
+    return Unit(**unit_data)
+
+@api_router.put("/units/{unit_id}", response_model=Unit)
+async def update_unit(unit_id: str, unit_data: UnitCreate):
+    update_data = unit_data.dict()
+    result = await db.units.update_one(
+        {"id": unit_id}, 
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Unité non trouvée")
+    
+    updated_unit = await db.units.find_one({"id": unit_id})
+    return Unit(**updated_unit)
+
+@api_router.delete("/units/{unit_id}")
+async def delete_unit(unit_id: str):
+    result = await db.units.delete_one({"id": unit_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Unité non trouvée")
+    return {"message": "Unité supprimée"}
+
 # Tenants endpoints
 @api_router.post("/tenants", response_model=Tenant)
 async def create_tenant(tenant_data: TenantCreate):
