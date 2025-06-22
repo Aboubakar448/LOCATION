@@ -790,6 +790,64 @@ async def delete_receipt(receipt_id: str):
         raise HTTPException(status_code=404, detail="Reçu non trouvé")
     return {"message": "Reçu supprimé"}
 
+# History and Search endpoints
+@api_router.get("/history/tenant/{tenant_id}", response_model=List[TenantHistory])
+async def get_tenant_history(tenant_id: str):
+    history = await db.tenant_history.find({"tenant_id": tenant_id}).sort("created_at", -1).to_list(1000)
+    return [TenantHistory(**h) for h in history]
+
+@api_router.get("/search/occupancy")
+async def search_occupancy_by_date(date: str):
+    """Rechercher qui occupait quoi à une date donnée"""
+    try:
+        # Trouver tous les locataires actifs à cette date
+        active_tenants = await db.tenants.find({
+            "$and": [
+                {"start_date": {"$lte": date}},
+                {
+                    "$or": [
+                        {"end_date": {"$gte": date}},
+                        {"end_date": None},
+                        {"end_date": ""}
+                    ]
+                }
+            ]
+        }).to_list(1000)
+        
+        result = []
+        for tenant in active_tenants:
+            # Get property info
+            property_data = await db.properties.find_one({"id": tenant.get("property_id")})
+            
+            # Get unit info if exists
+            unit_data = None
+            if tenant.get("unit_id"):
+                unit_data = await db.units.find_one({"id": tenant["unit_id"]})
+            
+            result.append({
+                "tenant_id": tenant["id"],
+                "tenant_name": tenant["name"],
+                "tenant_phone": tenant.get("phone", "Non renseigné"),
+                "property_name": property_data["address"] if property_data else "Inconnue",
+                "unit_number": unit_data["unit_number"] if unit_data else "Non spécifié",
+                "unit_type": unit_data["unit_type"] if unit_data else "Non spécifié",
+                "start_date": tenant.get("start_date"),
+                "end_date": tenant.get("end_date"),
+                "monthly_rent": tenant.get("monthly_rent", 0),
+                "months_paid": tenant.get("months_paid", 0)
+            })
+        
+        return {"date": date, "occupants": result}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Format de date invalide: {str(e)}")
+
+@api_router.get("/search/unit-history/{unit_id}")
+async def get_unit_occupancy_history(unit_id: str):
+    """Historique des occupants d'une unité spécifique"""
+    history = await db.tenant_history.find({"unit_id": unit_id}).sort("start_date", -1).to_list(1000)
+    return [TenantHistory(**h) for h in history]
+
 # Backup/Restore endpoints
 @api_router.get("/backup")
 async def backup_data():
