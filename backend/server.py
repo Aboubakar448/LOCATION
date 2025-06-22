@@ -137,6 +137,53 @@ class DashboardStats(BaseModel):
 async def root():
     return {"message": "API Gestion Location Immobilière"}
 
+# Settings endpoints
+@api_router.get("/settings", response_model=AppSettings)
+async def get_settings():
+    settings = await db.settings.find_one({})
+    if not settings:
+        # Create default settings
+        default_settings = AppSettings()
+        await db.settings.insert_one(default_settings.dict())
+        return default_settings
+    return AppSettings(**settings)
+
+@api_router.put("/settings", response_model=AppSettings)
+async def update_settings(settings_data: AppSettingsUpdate):
+    current_settings = await db.settings.find_one({})
+    if not current_settings:
+        # Create new settings
+        new_settings = AppSettings(**settings_data.dict())
+        await db.settings.insert_one(new_settings.dict())
+        return new_settings
+    
+    # Update existing settings
+    update_data = settings_data.dict(exclude_unset=True)
+    update_data["updated_at"] = datetime.utcnow()
+    
+    await db.settings.update_one(
+        {"id": current_settings["id"]},
+        {"$set": update_data}
+    )
+    
+    updated_settings = await db.settings.find_one({"id": current_settings["id"]})
+    return AppSettings(**updated_settings)
+
+@api_router.get("/currencies")
+async def get_available_currencies():
+    return {
+        "currencies": [
+            {"code": "EUR", "name": "Euro", "symbol": "€"},
+            {"code": "USD", "name": "Dollar US", "symbol": "$"},
+            {"code": "XOF", "name": "Franc CFA", "symbol": "CFA"},
+            {"code": "MAD", "name": "Dirham Marocain", "symbol": "DH"},
+            {"code": "TND", "name": "Dinar Tunisien", "symbol": "DT"},
+            {"code": "GBP", "name": "Livre Sterling", "symbol": "£"},
+            {"code": "CHF", "name": "Franc Suisse", "symbol": "CHF"},
+            {"code": "CAD", "name": "Dollar Canadien", "symbol": "C$"}
+        ]
+    }
+
 # Properties endpoints
 @api_router.post("/properties", response_model=Property)
 async def create_property(property_data: PropertyCreate):
