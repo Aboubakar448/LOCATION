@@ -751,11 +751,24 @@ function Payments({ payments, tenants, properties, settings, onRefresh, onGenera
 
   const markAsPaid = async (paymentId) => {
     try {
-      await axios.put(`${API}/payments/${paymentId}/mark-paid`);
+      const response = await axios.put(`${API}/payments/${paymentId}/mark-paid`);
+      const updatedPayment = response.data;
+      
+      // Generate receipt automatically after marking as paid
+      await onGenerateReceipt(updatedPayment, 'Espèces', 'Paiement marqué comme payé');
+      
       onRefresh();
     } catch (error) {
       console.error('Erreur lors du marquage du paiement:', error);
     }
+  };
+
+  const handleGenerateReceipt = async (payment) => {
+    if (payment.status !== 'payé') {
+      alert('Le paiement doit être marqué comme payé avant de générer un reçu');
+      return;
+    }
+    await onGenerateReceipt(payment);
   };
 
   const getTenantName = (tenantId) => {
