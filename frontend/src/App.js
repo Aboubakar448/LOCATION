@@ -31,13 +31,37 @@ function App() {
     }
   };
 
-  // Fetch available currencies
-  const fetchCurrencies = async () => {
+  // Fetch receipts
+  const fetchReceipts = async () => {
     try {
-      const response = await axios.get(`${API}/currencies`);
-      setCurrencies(response.data.currencies);
+      const response = await axios.get(`${API}/receipts`);
+      setReceipts(response.data);
     } catch (error) {
-      console.error('Erreur lors de la récupération des devises:', error);
+      console.error('Erreur lors de la récupération des reçus:', error);
+    }
+  };
+
+  // Generate receipt
+  const generateReceipt = async (payment, paymentMethod = 'Espèces', notes = '') => {
+    try {
+      const receiptData = {
+        tenant_id: payment.tenant_id,
+        payment_id: payment.id,
+        payment_method: paymentMethod,
+        notes: notes
+      };
+
+      const response = await axios.post(`${API}/receipts`, receiptData);
+      const receipt = response.data;
+      
+      setCurrentReceipt(receipt);
+      setShowReceiptModal(true);
+      fetchReceipts();
+      
+      return receipt;
+    } catch (error) {
+      console.error('Erreur lors de la génération du reçu:', error);
+      alert('Erreur lors de la génération du reçu');
     }
   };
 
