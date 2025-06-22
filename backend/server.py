@@ -685,6 +685,14 @@ async def mark_payment_paid(payment_id: str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Paiement non trouvé")
     
+    # Update tenant's months_paid count
+    payment = await db.payments.find_one({"id": payment_id})
+    if payment:
+        await db.tenants.update_one(
+            {"id": payment["tenant_id"]},
+            {"$inc": {"months_paid": 1}}
+        )
+    
     updated_payment = await db.payments.find_one({"id": payment_id})
     return Payment(**updated_payment)
 
