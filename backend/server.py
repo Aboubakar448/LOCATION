@@ -75,6 +75,32 @@ CURRENCY_SYMBOLS = {
     "CAD": "C$"
 }
 
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    email: str
+    full_name: str
+    role: UserRole = UserRole.viewer
+    is_active: bool = True
+    created_by: str  # ID of admin who created this user
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    full_name: str
+    password: str
+    role: UserRole = UserRole.viewer
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user_info: dict
+
 class AppSettings(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     currency: Currency = Currency.EUR
