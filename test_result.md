@@ -222,11 +222,11 @@ frontend:
 
   - task: "Properties Management"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -234,6 +234,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "La gestion des propriétés fonctionne correctement. Les propriétés sont affichées avec leurs détails, y compris le prix qui reflète correctement la devise sélectionnée dans les paramètres."
+      - working: false
+        agent: "testing"
+        comment: "L'ajout de propriété ne fonctionne pas. Lors de la soumission du formulaire, aucune requête API n'est envoyée au serveur. Les logs de la console montrent que toutes les requêtes API sont bloquées avec l'erreur 'net::ERR_ABORTED'. Le formulaire reste ouvert après la tentative de soumission, ce qui confirme que la requête n'a pas été traitée. Ce problème semble être lié à la configuration du serveur backend ou à des problèmes de réseau."
 
   - task: "Tenants Management"
     implemented: true
