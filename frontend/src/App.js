@@ -624,7 +624,7 @@ function Tenants({ tenants, properties, settings, onRefresh }) {
 }
 
 // Payments Component
-function Payments({ payments, tenants, properties, onRefresh }) {
+function Payments({ payments, tenants, properties, settings, onRefresh }) {
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [formData, setFormData] = useState({
