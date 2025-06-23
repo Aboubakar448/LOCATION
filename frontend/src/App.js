@@ -596,6 +596,22 @@ function Dashboard({ stats, onRefresh }) {
         </div>
         
         <div className="stat-card">
+          <div className="stat-icon">🏠</div>
+          <div className="stat-info">
+            <div className="stat-value">{stats.total_units}</div>
+            <div className="stat-label">Appartements/Studios</div>
+          </div>
+        </div>
+        
+        <div className="stat-card">
+          <div className="stat-icon">🔑</div>
+          <div className="stat-info">
+            <div className="stat-value">{stats.occupied_units}</div>
+            <div className="stat-label">Unités Occupées</div>
+          </div>
+        </div>
+        
+        <div className="stat-card">
           <div className="stat-icon">👥</div>
           <div className="stat-info">
             <div className="stat-value">{stats.total_tenants}</div>
