@@ -1836,4 +1836,410 @@ function ReceiptModal({ receipt, onClose }) {
   );
 }
 
+// Units Component (Appartements/Studios)
+function Units({ units, properties, settings, onRefresh }) {
+  const [showForm, setShowForm] = useState(false);
+  const [editingUnit, setEditingUnit] = useState(null);
+  const [formData, setFormData] = useState({
+    property_id: '',
+    unit_number: '',
+    unit_type: 'appartement',
+    monthly_rent: '',
+    bedrooms: '',
+    bathrooms: '',
+    surface_area: '',
+    description: '',
+    status: 'disponible'
+  });
+
+  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
+                         settings?.currency === 'USD' ? '$' : 
+                         settings?.currency === 'XOF' ? 'CFA' : 
+                         settings?.currency === 'MAD' ? 'DH' : 
+                         settings?.currency === 'TND' ? 'DT' : 
+                         settings?.currency === 'GBP' ? '£' : 
+                         settings?.currency === 'CHF' ? 'CHF' : 
+                         settings?.currency === 'CAD' ? 'C$' : 'CFA';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = {
+        ...formData,
+        monthly_rent: parseFloat(formData.monthly_rent),
+        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
+        bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
+        surface_area: formData.surface_area ? parseFloat(formData.surface_area) : null
+      };
+
+      if (editingUnit) {
+        await axios.put(`${API}/units/${editingUnit.id}`, data);
+      } else {
+        await axios.post(`${API}/units`, data);
+      }
+      
+      setShowForm(false);
+      setEditingUnit(null);
+      setFormData({
+        property_id: '',
+        unit_number: '',
+        unit_type: 'appartement',
+        monthly_rent: '',
+        bedrooms: '',
+        bathrooms: '',
+        surface_area: '',
+        description: '',
+        status: 'disponible'
+      });
+      onRefresh();
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
+  const handleEdit = (unit) => {
+    setEditingUnit(unit);
+    setFormData({
+      property_id: unit.property_id,
+      unit_number: unit.unit_number,
+      unit_type: unit.unit_type,
+      monthly_rent: unit.monthly_rent.toString(),
+      bedrooms: unit.bedrooms ? unit.bedrooms.toString() : '',
+      bathrooms: unit.bathrooms ? unit.bathrooms.toString() : '',
+      surface_area: unit.surface_area ? unit.surface_area.toString() : '',
+      description: unit.description || '',
+      status: unit.status
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async (unitId) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette unité ?')) {
+      try {
+        await axios.delete(`${API}/units/${unitId}`);
+        onRefresh();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+      }
+    }
+  };
+
+  const getPropertyName = (propertyId) => {
+    const property = properties.find(p => p.id === propertyId);
+    return property ? property.address : 'Propriété inconnue';
+  };
+
+  const getUnitTypeIcon = (type) => {
+    switch(type) {
+      case 'appartement': return '🏠';
+      case 'studio': return '🏡';
+      case 'maison': return '🏘️';
+      case 'commerce': return '🏪';
+      default: return '🏠';
+    }
+  };
+
+  return (
+    <div className="units">
+      <div className="section-header">
+        <h2>🏠 Appartements & Studios</h2>
+        <button 
+          className="add-btn"
+          onClick={() => {
+            setShowForm(true);
+            setEditingUnit(null);
+            setFormData({
+              property_id: '',
+              unit_number: '',
+              unit_type: 'appartement',
+              monthly_rent: '',
+              bedrooms: '',
+              bathrooms: '',
+              surface_area: '',
+              description: '',
+              status: 'disponible'
+            });
+          }}
+        >
+          ➕ Ajouter Unité
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>{editingUnit ? 'Modifier Unité' : 'Nouvelle Unité'}</h3>
+            <form onSubmit={handleSubmit}>
+              <select
+                value={formData.property_id}
+                onChange={(e) => setFormData({...formData, property_id: e.target.value})}
+                required
+              >
+                <option value="">Sélectionner une propriété</option>
+                {properties.map(property => (
+                  <option key={property.id} value={property.id}>
+                    {property.address}
+                  </option>
+                ))}
+              </select>
+              
+              <input
+                type="text"
+                placeholder="Numéro/Nom d'unité (ex: Apt 1, Studio A)"
+                value={formData.unit_number}
+                onChange={(e) => setFormData({...formData, unit_number: e.target.value})}
+                required
+              />
+              
+              <select
+                value={formData.unit_type}
+                onChange={(e) => setFormData({...formData, unit_type: e.target.value})}
+                required
+              >
+                <option value="appartement">🏠 Appartement</option>
+                <option value="studio">🏡 Studio</option>
+                <option value="maison">🏘️ Maison</option>
+                <option value="commerce">🏪 Commerce</option>
+              </select>
+              
+              <input
+                type="number"
+                placeholder={`Loyer mensuel (${currencySymbol})`}
+                value={formData.monthly_rent}
+                onChange={(e) => setFormData({...formData, monthly_rent: e.target.value})}
+                required
+              />
+              
+              <input
+                type="number"
+                placeholder="Nombre de chambres"
+                value={formData.bedrooms}
+                onChange={(e) => setFormData({...formData, bedrooms: e.target.value})}
+              />
+              
+              <input
+                type="number"
+                placeholder="Nombre de salles de bain"
+                value={formData.bathrooms}
+                onChange={(e) => setFormData({...formData, bathrooms: e.target.value})}
+              />
+              
+              <input
+                type="number"
+                step="0.1"
+                placeholder="Surface (m²)"
+                value={formData.surface_area}
+                onChange={(e) => setFormData({...formData, surface_area: e.target.value})}
+              />
+              
+              <textarea
+                placeholder="Description"
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+              />
+              
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+              >
+                <option value="disponible">Disponible</option>
+                <option value="occupé">Occupé</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
+              
+              <div className="form-actions">
+                <button type="submit">{editingUnit ? 'Modifier' : 'Ajouter'}</button>
+                <button type="button" onClick={() => setShowForm(false)}>Annuler</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="cards-grid">
+        {units.map(unit => (
+          <div key={unit.id} className="unit-card">
+            <div className="card-header">
+              <h3>{getUnitTypeIcon(unit.unit_type)} {unit.unit_number}</h3>
+              <span className={`status ${unit.status}`}>
+                {unit.status}
+              </span>
+            </div>
+            <div className="card-content">
+              <p><strong>📍 Propriété:</strong> {getPropertyName(unit.property_id)}</p>
+              <p className="rent">💰 {unit.monthly_rent}{currencySymbol}/mois</p>
+              {unit.bedrooms && <p>🛏️ {unit.bedrooms} chambre{unit.bedrooms > 1 ? 's' : ''}</p>}
+              {unit.bathrooms && <p>🚿 {unit.bathrooms} salle{unit.bathrooms > 1 ? 's' : ''} de bain</p>}
+              {unit.surface_area && <p>📐 {unit.surface_area}m²</p>}
+              {unit.description && <p className="description">{unit.description}</p>}
+            </div>
+            <div className="card-actions">
+              <button onClick={() => handleEdit(unit)}>✏️ Modifier</button>
+              <button onClick={() => handleDelete(unit.id)} className="delete-btn">🗑️ Supprimer</button>
+            </div>
+          </div>
+        ))}
+        
+        {units.length === 0 && (
+          <div className="no-data">
+            <p>Aucune unité créée.</p>
+            <p>Commencez par ajouter des appartements ou studios à vos propriétés.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// SearchHistory Component
+function SearchHistory({ properties, units, tenants, settings }) {
+  const [searchDate, setSearchDate] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedUnitHistory, setSelectedUnitHistory] = useState(null);
+
+  const searchByDate = async () => {
+    if (!searchDate) {
+      alert('Veuillez sélectionner une date');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API}/search/occupancy?date=${searchDate}`);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la recherche:', error);
+      alert('Erreur lors de la recherche');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getUnitHistory = async (unitId) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API}/search/unit-history/${unitId}`);
+      setSelectedUnitHistory(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'historique:', error);
+      alert('Erreur lors de la récupération de l\'historique');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const currencySymbol = settings?.currency === 'XOF' ? 'CFA' : '€';
+
+  return (
+    <div className="search-history">
+      <div className="section-header">
+        <h2>🔍 Recherche dans l'Historique</h2>
+      </div>
+
+      <div className="search-section">
+        <div className="search-card">
+          <h3>📅 Rechercher les Occupants par Date</h3>
+          <p>Trouvez qui occupait quels appartements/studios à une date donnée</p>
+          
+          <div className="search-form">
+            <input
+              type="date"
+              value={searchDate}
+              onChange={(e) => setSearchDate(e.target.value)}
+              className="date-input"
+            />
+            <button 
+              onClick={searchByDate}
+              disabled={loading}
+              className="search-btn"
+            >
+              {loading ? '⏳ Recherche...' : '🔍 Rechercher'}
+            </button>
+          </div>
+
+          {searchResults && (
+            <div className="search-results">
+              <h4>📋 Occupants le {new Date(searchResults.date).toLocaleDateString('fr-FR')}</h4>
+              
+              {searchResults.occupants.length === 0 ? (
+                <p className="no-results">Aucun occupant trouvé pour cette date.</p>
+              ) : (
+                <div className="occupants-list">
+                  {searchResults.occupants.map((occupant, index) => (
+                    <div key={index} className="occupant-item">
+                      <div className="occupant-info">
+                        <h5>👤 {occupant.tenant_name}</h5>
+                        <p>📞 {occupant.tenant_phone}</p>
+                        <p>🏠 {occupant.property_name}</p>
+                        <p>🏡 {occupant.unit_number} ({occupant.unit_type})</p>
+                        <p>💰 {occupant.monthly_rent}{currencySymbol}/mois</p>
+                        <p>📅 Du {new Date(occupant.start_date).toLocaleDateString('fr-FR')} 
+                           {occupant.end_date ? ` au ${new Date(occupant.end_date).toLocaleDateString('fr-FR')}` : ' (en cours)'}
+                        </p>
+                        <p>💸 {occupant.months_paid} mois payé{occupant.months_paid > 1 ? 's' : ''}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="search-card">
+          <h3>🏠 Historique des Unités</h3>
+          <p>Consultez l'historique complet d'un appartement ou studio</p>
+          
+          <div className="units-grid">
+            {units.map(unit => (
+              <div key={unit.id} className="unit-history-item">
+                <h5>{unit.unit_number}</h5>
+                <p>{properties.find(p => p.id === unit.property_id)?.address}</p>
+                <button 
+                  onClick={() => getUnitHistory(unit.id)}
+                  className="history-btn"
+                >
+                  📋 Voir Historique
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {selectedUnitHistory && (
+            <div className="unit-history-results">
+              <h4>📋 Historique de l'Unité</h4>
+              
+              {selectedUnitHistory.length === 0 ? (
+                <p className="no-results">Aucun historique trouvé pour cette unité.</p>
+              ) : (
+                <div className="history-timeline">
+                  {selectedUnitHistory.map((entry, index) => (
+                    <div key={entry.id} className="timeline-item">
+                      <div className="timeline-date">
+                        {new Date(entry.created_at).toLocaleDateString('fr-FR')}
+                      </div>
+                      <div className="timeline-content">
+                        <h6>{entry.tenant_name}</h6>
+                        <p>{entry.action === 'moved_in' ? '🏠 Emménagement' : 
+                            entry.action === 'moved_out' ? '📦 Déménagement' : 
+                            '💰 Modification loyer'}</p>
+                        <p>Du {new Date(entry.start_date).toLocaleDateString('fr-FR')} 
+                           {entry.end_date ? ` au ${new Date(entry.end_date).toLocaleDateString('fr-FR')}` : ' (en cours)'}
+                        </p>
+                        <p>💰 {entry.monthly_rent}{currencySymbol}/mois</p>
+                        <p>💸 {entry.months_paid} mois payé{entry.months_paid > 1 ? 's' : ''}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default App;
