@@ -1164,9 +1164,10 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                   </option>
                 ))}
               </select>
+              
               <select
                 value={formData.property_id}
-                onChange={(e) => setFormData({...formData, property_id: e.target.value})}
+                onChange={(e) => setFormData({...formData, property_id: e.target.value, unit_id: ''})}
                 required
               >
                 <option value="">Sélectionner une propriété</option>
@@ -1176,6 +1177,21 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                   </option>
                 ))}
               </select>
+
+              {formData.property_id && (
+                <select
+                  value={formData.unit_id}
+                  onChange={(e) => setFormData({...formData, unit_id: e.target.value})}
+                >
+                  <option value="">Sélectionner un appartement/studio (optionnel)</option>
+                  {getUnitsForProperty(formData.property_id).map(unit => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.unit_number} - {unit.unit_type}
+                    </option>
+                  ))}
+                </select>
+              )}
+              
               <select
                 value={formData.month}
                 onChange={(e) => setFormData({...formData, month: e.target.value})}
@@ -1185,6 +1201,7 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                   <option key={index + 1} value={index + 1}>{month}</option>
                 ))}
               </select>
+              
               <input
                 type="number"
                 placeholder="Année"
@@ -1192,6 +1209,7 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                 onChange={(e) => setFormData({...formData, year: e.target.value})}
                 required
               />
+              
               <input
                 type="number"
                 placeholder={`Montant (${currencySymbol})`}
@@ -1199,6 +1217,15 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                 onChange={(e) => setFormData({...formData, amount: e.target.value})}
                 required
               />
+
+              <input
+                type="date"
+                placeholder="Date d'échéance"
+                value={formData.due_date}
+                onChange={(e) => setFormData({...formData, due_date: e.target.value})}
+                required
+              />
+              
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -1207,6 +1234,17 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
                 <option value="payé">Payé</option>
                 <option value="en_retard">En retard</option>
               </select>
+
+              <select
+                value={formData.payment_method}
+                onChange={(e) => setFormData({...formData, payment_method: e.target.value})}
+              >
+                <option value="Espèces">Espèces</option>
+                <option value="Virement">Virement</option>
+                <option value="Chèque">Chèque</option>
+                <option value="Mobile Money">Mobile Money</option>
+              </select>
+              
               <div className="form-actions">
                 <button type="submit">{editingPayment ? 'Modifier' : 'Ajouter'}</button>
                 <button type="button" onClick={() => setShowForm(false)}>Annuler</button>
