@@ -1078,14 +1078,18 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
       setFormData({
         tenant_id: '',
         property_id: '',
+        unit_id: '',
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
         amount: '',
-        status: 'en_attente'
+        due_date: '',
+        status: 'en_attente',
+        payment_method: 'Espèces'
       });
       onRefresh();
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
+      alert('Erreur lors de l\'ajout du paiement: ' + error.message);
     }
   };
 
