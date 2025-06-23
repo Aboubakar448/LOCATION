@@ -1035,26 +1035,22 @@ function Tenants({ tenants, properties, units, settings, onRefresh }) {
 }
 
 // Payments Component
-function Payments({ payments, tenants, properties, settings, onRefresh, onGenerateReceipt }) {
+function Payments({ payments, tenants, properties, units, settings, onRefresh, onGenerateReceipt }) {
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [formData, setFormData] = useState({
     tenant_id: '',
     property_id: '',
+    unit_id: '',
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     amount: '',
-    status: 'en_attente'
+    due_date: '',
+    status: 'en_attente',
+    payment_method: 'Espèces'
   });
 
-  const currencySymbol = settings?.currency === 'EUR' ? '€' : 
-                         settings?.currency === 'USD' ? '$' : 
-                         settings?.currency === 'XOF' ? 'CFA' : 
-                         settings?.currency === 'MAD' ? 'DH' : 
-                         settings?.currency === 'TND' ? 'DT' : 
-                         settings?.currency === 'GBP' ? '£' : 
-                         settings?.currency === 'CHF' ? 'CHF' : 
-                         settings?.currency === 'CAD' ? 'C$' : '€';
+  const currencySymbol = settings?.currency === 'XOF' ? 'CFA' : '€';
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
