@@ -1115,6 +1115,16 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
     await onGenerateReceipt(payment);
   };
 
+  const getTenantName = (tenantId) => {
+    const tenant = tenants.find(t => t.id === tenantId);
+    return tenant ? tenant.name : 'Inconnu';
+  };
+
+  const getPropertyAddress = (propertyId) => {
+    const property = properties.find(p => p.id === propertyId);
+    return property ? property.address : 'Inconnu';
+  };
+
   const getUnitNumber = (unitId) => {
     const unit = units.find(u => u.id === unitId);
     return unit ? unit.unit_number : 'Non spécifié';
