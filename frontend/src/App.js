@@ -1259,8 +1259,11 @@ function Payments({ payments, tenants, properties, units, settings, onRefresh, o
           <div key={payment.id} className={`payment-item ${payment.status}`}>
             <div className="payment-info">
               <h4>{getTenantName(payment.tenant_id)}</h4>
-              <p>{getPropertyAddress(payment.property_id)}</p>
-              <p>{monthNames[payment.month - 1]} {payment.year}</p>
+              <p><strong>Propriété:</strong> {getPropertyAddress(payment.property_id)}</p>
+              {payment.unit_id && <p><strong>Unité:</strong> {getUnitNumber(payment.unit_id)}</p>}
+              <p><strong>Période:</strong> {monthNames[payment.month - 1]} {payment.year}</p>
+              <p><strong>Échéance:</strong> {new Date(payment.due_date).toLocaleDateString('fr-FR')}</p>
+              <p><strong>Mode:</strong> {payment.payment_method}</p>
             </div>
             <div className="payment-amount">
               <span className="amount">{payment.amount}{currencySymbol}</span>
